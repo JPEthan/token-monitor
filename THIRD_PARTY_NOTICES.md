@@ -6,6 +6,8 @@ This independent app interoperates with the OpenAI API. OpenAI, ChatGPT, API nam
 
 No OpenAI SDK is bundled. The app sends HTTPS requests directly to the documented Organization Usage endpoint.
 
+Most source code, initial implementations, refactoring suggestions, and portions of the technical documentation were generated or modified with assistance from OpenAI GPT/Codex. The project maintainer reviewed, modified, tested, and selected the published result. This assistance does not make the project an official OpenAI product or imply OpenAI review, approval, endorsement, or support. See [AI_DISCLOSURE.md](AI_DISCLOSURE.md).
+
 ## Character artwork and app icon
 
 The white-and-purple chibi dragon character was supplied by the project owner, who states that it was created with OpenAI GPT image generation. Version 1.5.0 uses `dragon-chibi-neutral-v4.png`, which removes the earlier OpenAI Blossom-like hair accessory. The AppIcon is generated from this same neutral asset.

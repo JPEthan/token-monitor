@@ -97,6 +97,7 @@ Admin API Key 權限很高，請勿將金鑰貼進截圖、提交到 Git，或�
 ## 公開發布文件
 
 - [MIT 程式碼授權](LICENSE)
+- [AI 輔助開發聲明](AI_DISCLOSURE.md)
 - [人物與 AppIcon 獨立權利說明](ASSET_LICENSE.md)
 - [免責聲明](DISCLAIMER.md)
 - [隱私說明](PRIVACY.md)
@@ -111,6 +112,10 @@ Admin API Key 權限很高，請勿將金鑰貼進截圖、提交到 Git，或�
 ## 授權範圍
 
 程式碼與文件依 [MIT License](LICENSE) 發布。人物圖 `dragon-chibi-neutral-v4.png` 及其衍生的 `AppIcon.png`、`AppIcon.icns` 不包含在 MIT License 中，也沒有由本專案另行授予抽出、修改、再授權或在其他產品中重複使用的權利；詳情見 [ASSET_LICENSE.md](ASSET_LICENSE.md)。
+
+## AI 輔助開發聲明
+
+本專案的大多數程式碼、初始實作、重構建議及部分技術文件由 OpenAI GPT／Codex 協助生成或修改。專案維護者負責提出需求、選擇方案、檢查與修改輸出、執行測試，以及決定最終發布內容。AI 協助不代表程式碼一定正確、安全或無侵權風險，也不代表本專案是 OpenAI 官方產品或獲得 OpenAI 背書。完整中英文說明請見 [AI_DISCLOSURE.md](AI_DISCLOSURE.md)。
 
 專案已附 GitHub Actions 的 macOS 測試／建置驗證工作流程、Issue 範本與 Pull Request 範本。工作流程只驗證程式能否建置，不會上傳或發布編譯完成的 App。GitHub 會為 Tag／Release 自動提供原始碼 ZIP 與 tar.gz，不需要手動附加 App ZIP。
 

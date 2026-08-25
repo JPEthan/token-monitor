@@ -62,6 +62,7 @@ BIN_DIR="$(
 
 for legal_document in \
     LICENSE \
+    AI_DISCLOSURE.md \
     DISCLAIMER.md \
     PRIVACY.md \
     SECURITY.md \

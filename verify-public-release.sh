@@ -51,7 +51,7 @@ fi
 print -r -- "$source_listing" | /usr/bin/grep -Eq '/Resources/Mascot/dragon-chibi-neutral-v4\.png$' \
     || fail "來源 ZIP 未包含中性 v4 人物素材"
 
-for legal_document in LICENSE DISCLAIMER.md PRIVACY.md SECURITY.md THIRD_PARTY_NOTICES.md ASSET_RIGHTS.md ASSET_LICENSE.md
+for legal_document in LICENSE AI_DISCLOSURE.md DISCLAIMER.md PRIVACY.md SECURITY.md THIRD_PARTY_NOTICES.md ASSET_RIGHTS.md ASSET_LICENSE.md
 do
     [[ -f "$APP_DIR/Contents/Resources/Legal/$legal_document" ]] \
         || fail "App 缺少 $legal_document"
@@ -59,6 +59,8 @@ done
 
 print -r -- "$source_listing" | /usr/bin/grep -Eq '/LICENSE$' \
     || fail "來源 ZIP 缺少 MIT License"
+print -r -- "$source_listing" | /usr/bin/grep -Eq '/AI_DISCLOSURE\.md$' \
+    || fail "來源 ZIP 缺少 AI 輔助開發聲明"
 print -r -- "$source_listing" | /usr/bin/grep -Eq '/ASSET_LICENSE\.md$' \
     || fail "來源 ZIP 缺少人物素材獨立授權說明"
 print -r -- "$source_listing" | /usr/bin/grep -Eq '/CONTRIBUTING\.md$' \

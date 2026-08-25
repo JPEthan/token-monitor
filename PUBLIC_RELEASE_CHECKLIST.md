@@ -22,6 +22,7 @@
 - [x] 本次發布範圍確定為 GitHub source-only，不提供 `.app`、DMG、PKG 或 App ZIP。
 - [x] `.build/`、`dist/`、`release-*/`、`.swiftpm/`、`.vscode/` 及本機中繼資料均已從 Git 排除。
 - [x] GitHub Actions 只進行測試與建置驗證，沒有上傳或發布二進位產物的步驟。
+- [x] README 與 `AI_DISCLOSURE.md` 已揭露大多數程式碼及部分技術文件由 OpenAI GPT／Codex 協助生成或修改，並說明維護者的審查與測試責任。
 
 ## 公開原始碼前仍需發布者完成的事項
 

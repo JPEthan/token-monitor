@@ -3,6 +3,7 @@
 ## 1.5.0 — Token Monitor open-source candidate
 
 - Adopted a source-only GitHub publication policy: no precompiled `.app`, DMG, PKG, or App ZIP is published.
+- Added a multilingual disclosure that most code and parts of the technical documentation were generated or modified with OpenAI GPT/Codex assistance and then reviewed and tested by the maintainer.
 - Renamed the product, App, executable, Swift modules, source archive, and release archive to the neutral `Token Monitor`／`TokenMonitor` identity.
 - Added automatic migration from the legacy Keychain service name so existing saved API keys continue to work after the rename.
 - Licensed source code and documentation under the MIT License.

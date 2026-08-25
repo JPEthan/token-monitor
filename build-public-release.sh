@@ -23,6 +23,7 @@ trap cleanup EXIT
 for file in \
     .gitignore \
     LICENSE \
+    AI_DISCLOSURE.md \
     Package.swift \
     README.md \
     CONTRIBUTING.md \
