@@ -1,0 +1,49 @@
+name: 錯誤回報
+description: 回報可穩定重現的 Token Monitor 問題
+title: "[Bug] "
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        請勿貼上 OpenAI Admin API Key、Bearer Token、帳戶私人資料或未遮蔽的截圖。安全漏洞請使用 Repository 的私人漏洞回報功能。
+  - type: input
+    id: version
+    attributes:
+      label: Token Monitor 版本
+      placeholder: 例如 1.5.0
+    validations:
+      required: true
+  - type: input
+    id: macos
+    attributes:
+      label: macOS 版本與 Mac 架構
+      placeholder: 例如 macOS 15.6 / Apple silicon
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: 重現步驟
+      description: 請提供不含秘密與私人資料的最短重現步驟。
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: 預期結果
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: 實際結果
+    validations:
+      required: true
+  - type: checkboxes
+    id: secrets
+    attributes:
+      label: 安全確認
+      options:
+        - label: 我已確認回報中沒有 API Key、Bearer Token、私鑰或其他秘密。
+          required: true
