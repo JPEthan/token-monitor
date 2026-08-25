@@ -114,10 +114,6 @@ Admin API Key 權限很高，請勿將金鑰貼進截圖、提交到 Git，或�
 
 專案已附 GitHub Actions 的 macOS 測試／建置驗證工作流程、Issue 範本與 Pull Request 範本。工作流程只驗證程式能否建置，不會上傳或發布編譯完成的 App。GitHub 會為 Tag／Release 自動提供原始碼 ZIP 與 tar.gz，不需要手動附加 App ZIP。
 
-### 尚未完成的發布者責任
-
-目前產品已改名為 **Token Monitor**，程式碼與文件採用 MIT License。人物與 AppIcon 已改用不含 OpenAI Blossom 樣式標誌的版本，並明確排除於 MIT License 之外。公開原始碼前，發布者仍應補齊確切圖像生成產品／模型／日期、當時適用條款與全部參考輸入的權利記錄，並提供公開安全聯絡方式。Bundle ID、Developer ID、公證與乾淨電腦安裝測試不是本次 source-only 發布的必要條件；只有未來公開提供可執行 App 時才需要完成。
-
 ## 更新方式
 
 可選每 1、5 或 15 分鐘自動同步，也可按「立即同步」。這是輪詢式近即時顯示；OpenAI Usage API 本身若有統計延遲，桌面程式無法消除該延遲。
