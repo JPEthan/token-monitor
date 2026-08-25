@@ -1,5 +1,9 @@
 # Token Monitor（macOS）
 
+[繁體中文](#繁體中文) | [English](#english)
+
+## 繁體中文
+
 > **非官方第三方工具：** 本專案不是 OpenAI 官方產品，也未獲 OpenAI 贊助、認可、背書或合作。顯示的「剩餘 Token」是使用者自訂額度減去 API 彙總用量所得的輔助估算，不是官方帳單、硬性限額、ChatGPT 訊息額度或 context window。使用前請閱讀 [免責聲明](DISCLAIMER.md) 與 [隱私說明](PRIVACY.md)。
 
 這是一個常駐 macOS 選單列的 OpenAI API Token 用量監視器。它會讀取 OpenAI 官方 Organization Usage API，顯示本月的輸入、輸出、快取輸入、請求次數，以及依照自訂月度 Token 額度計算的剩餘量。
@@ -19,7 +23,7 @@
 - 關閉設定後會同步縮回實際選單視窗高度，不殘留上下透明區域
 - App 使用目前的白紫色 Q 版龍娘人物作為 macOS 徽標
 
-## 先說清楚「剩餘 Token」
+### 先說清楚「剩餘 Token」
 
 OpenAI Usage API 只提供已使用量，沒有官方的 `remaining_tokens` 欄位。因此程式顯示的是：
 
@@ -31,7 +35,7 @@ OpenAI Usage API 只提供已使用量，沒有官方的 `remaining_tokens` 欄�
 
 這不是 ChatGPT Plus／Pro 的訊息額度，也不是單次對話 context window 的剩餘 Token。
 
-## 使用條件
+### 使用條件
 
 - macOS 13 或以上；目前只公開原始碼，已在 Apple silicon（arm64）開發環境驗證
 - OpenAI API 組織的 **Admin API Key**（一般 Project API Key 沒有讀取組織用量的權限）
@@ -43,7 +47,7 @@ OpenAI Usage API 只提供已使用量，沒有官方的 `remaining_tokens` 欄�
 - [Organization Usage 回應欄位](https://developers.openai.com/api/reference/resources/admin/subresources/organization/subresources/usage)
 - [Admin API Keys](https://developers.openai.com/api/reference/resources/admin/subresources/organization/subresources/admin_api_keys)
 
-## 公開範圍
+### 公開範圍
 
 本 GitHub 專案只公開原始碼、測試、建置腳本、必要人物／圖示素材及法律文件，**不提供預先編譯的 `.app`、DMG、PKG 或 App ZIP 下載**。`.build/`、`dist/`、`release-*/` 與本機編譯產物均由 `.gitignore` 排除。
 
@@ -51,12 +55,12 @@ Apple Developer ID 簽署與 Apple 公證只適用於發布者向其他人提供
 
 > **憑證警告：** Admin API Key 是高權限憑證，只應由獲授權的組織管理者使用。不要把真實金鑰放入原始碼、Issue、Pull Request、截圖、聊天或日誌。從 App 刪除 Keychain 項目也不等於在 OpenAI 撤銷金鑰。
 
-## 從原始碼建置
+### 從原始碼建置
 
 專案不使用第三方套件，只需要 Apple Command Line Tools：
 
 ```bash
-cd TokenMonitor
+cd token-monitor
 chmod +x build-app.sh
 ./build-app.sh
 ```
@@ -81,7 +85,7 @@ chmod +x build-public-release.sh verify-public-release.sh
 ./verify-public-release.sh
 ```
 
-## 資安設計
+### 資安設計
 
 - Admin API Key 只儲存在 macOS Keychain。
 - UserDefaults 只保存自訂 Token 額度、更新頻率、顯示語言、音效開關、桌寵位置與左右鏡像方向。
@@ -94,7 +98,7 @@ chmod +x build-public-release.sh verify-public-release.sh
 
 Admin API Key 權限很高，請勿將金鑰貼進截圖、提交到 Git，或交給不信任的程式。
 
-## 公開發布文件
+### 公開發布文件
 
 - [MIT 程式碼授權](LICENSE)
 - [AI 輔助開發聲明](AI_DISCLOSURE.md)
@@ -109,16 +113,143 @@ Admin API Key 權限很高，請勿將金鑰貼進截圖、提交到 Git，或�
 - [貢獻指南](CONTRIBUTING.md)
 - [行為準則](CODE_OF_CONDUCT.md)
 
-## 授權範圍
+### 授權範圍
 
 程式碼與文件依 [MIT License](LICENSE) 發布。人物圖 `dragon-chibi-neutral-v4.png` 及其衍生的 `AppIcon.png`、`AppIcon.icns` 不包含在 MIT License 中，也沒有由本專案另行授予抽出、修改、再授權或在其他產品中重複使用的權利；詳情見 [ASSET_LICENSE.md](ASSET_LICENSE.md)。
 
-## AI 輔助開發聲明
+### AI 輔助開發聲明
 
 本專案的大多數程式碼、初始實作、重構建議及部分技術文件由 OpenAI GPT／Codex 協助生成或修改。專案維護者負責提出需求、選擇方案、檢查與修改輸出、執行測試，以及決定最終發布內容。AI 協助不代表程式碼一定正確、安全或無侵權風險，也不代表本專案是 OpenAI 官方產品或獲得 OpenAI 背書。完整中英文說明請見 [AI_DISCLOSURE.md](AI_DISCLOSURE.md)。
 
 專案已附 GitHub Actions 的 macOS 測試／建置驗證工作流程、Issue 範本與 Pull Request 範本。工作流程只驗證程式能否建置，不會上傳或發布編譯完成的 App。GitHub 會為 Tag／Release 自動提供原始碼 ZIP 與 tar.gz，不需要手動附加 App ZIP。
 
-## 更新方式
+### 更新方式
 
 可選每 1、5 或 15 分鐘自動同步，也可按「立即同步」。這是輪詢式近即時顯示；OpenAI Usage API 本身若有統計延遲，桌面程式無法消除該延遲。
+
+---
+
+## English
+
+> **Unofficial third-party utility:** This project is not an official OpenAI product and is not sponsored, approved, endorsed, or supported by OpenAI. The displayed “remaining tokens” value is an informational estimate calculated by subtracting aggregate API usage from a user-defined budget. It is not an official bill, enforced limit, ChatGPT message allowance, or context-window reading. Read the [Disclaimer](DISCLAIMER.md) and [Privacy Notice](PRIVACY.md) before use.
+
+Token Monitor is a macOS menu-bar utility for monitoring OpenAI API token usage. It reads the official OpenAI Organization Usage API and displays the current month's input tokens, output tokens, cached input tokens, request count, and remaining amount under a user-defined monthly token budget.
+
+Selecting “Refresh and Show” displays an always-on-top, draggable, transparent desktop character widget near the lower-right corner of the screen. Its speech bubble shows used and remaining tokens. The character uses the user-supplied white-and-purple AI-generated chibi dragon artwork.
+
+- Clicking the character plays a spring animation, refreshes usage immediately, and displays the token bubble.
+- The desktop character appears automatically when the app starts and can be shown again from the menu bar.
+- The bubble closes automatically after eight seconds and can also be dismissed by clicking it.
+- After dragging, the widget snaps to the nearest left or right screen edge.
+- The character and bubble layout mirror automatically when attached to the left edge.
+- Position and orientation are remembered and restored the next time the widget appears.
+- The transparent borderless window remains above ordinary apps across desktop Spaces.
+- High-quality interpolation and a softened edge layer reduce visible aliasing while scaling the character.
+- Settings support Traditional Chinese, Simplified Chinese, and English; the desktop bubble changes language immediately.
+- Clicking the character or refreshing manually can play a synthesized rubber-duck sound, which can be disabled or previewed in Settings.
+- Closing Settings restores the actual compact menu-window height without leaving transparent space above or below the UI.
+- The current white-and-purple chibi dragon artwork is also used as the macOS app icon.
+
+### What “remaining tokens” means
+
+The OpenAI Usage API reports usage but does not provide an official `remaining_tokens` field. Token Monitor calculates:
+
+```text
+Custom budget remaining = configured monthly token budget - this month's input_tokens - this month's output_tokens
+```
+
+`input_cached_tokens` is already included in `input_tokens`. It is displayed separately for information and is not counted twice.
+
+This value is not the ChatGPT Plus/Pro message allowance and is not the remaining context window of an individual conversation.
+
+### Requirements
+
+- macOS 13 or later. This repository is source-only and has been verified in an Apple silicon (arm64) development environment.
+- An OpenAI API organization **Admin API Key**. An ordinary Project API Key does not have access to organization-level usage.
+- A user-defined monthly token budget, such as `10,000,000`.
+
+Official references:
+
+- [Completions Usage API](https://developers.openai.com/api/reference/ruby/resources/admin/subresources/organization/subresources/usage/methods/completions)
+- [Organization Usage response fields](https://developers.openai.com/api/reference/resources/admin/subresources/organization/subresources/usage)
+- [Admin API Keys](https://developers.openai.com/api/reference/resources/admin/subresources/organization/subresources/admin_api_keys)
+
+### Publication scope
+
+This GitHub project publishes source code, tests, build scripts, required character/icon assets, and legal documents only. It **does not provide a precompiled `.app`, DMG, PKG, or App ZIP download**. `.build/`, `dist/`, `release-*/`, and local build products are excluded by `.gitignore`.
+
+Developer ID signing and Apple notarization are required when a publisher distributes an executable app to other users; they are not required for source-only publication. Users must review and build the app from source themselves.
+
+> **Credential warning:** An Admin API Key is a highly privileged credential and should be used only by an authorized organization administrator. Never place a real key in source code, issues, pull requests, screenshots, chats, or logs. Removing the local Keychain entry from the app does not revoke the key at OpenAI.
+
+### Build from source
+
+The project has no third-party package dependencies. Apple Command Line Tools are sufficient:
+
+```bash
+cd token-monitor
+chmod +x build-app.sh
+./build-app.sh
+```
+
+Run the core verification suite:
+
+```bash
+chmod +x test.sh
+./test.sh
+```
+
+Build outputs:
+
+- `dist/Token Monitor.app`
+- `dist/Token Monitor.zip`
+
+For complete local packaging, privacy, and archive verification, run the following commands. Generated apps and archives are for local QA only, are ignored by Git, and are not published by this project:
+
+```bash
+chmod +x build-public-release.sh verify-public-release.sh
+./build-public-release.sh
+./verify-public-release.sh
+```
+
+### Security design
+
+- The Admin API Key is stored only in macOS Keychain.
+- UserDefaults stores only the custom token budget, refresh interval, display language, sound preference, desktop-widget position, and mirrored orientation.
+- The app sends usage requests only to `https://api.openai.com/v1/organization/usage/completions`.
+- Character artwork is bundled locally and is never fetched dynamically from the network.
+- Source files, configuration files, and release packages do not contain an API key.
+- The saved Keychain credential can be removed from Settings at any time.
+- API requests use an ephemeral URL session with no persistent disk cache and no cookies.
+- The app contains no ads, analytics, telemetry, trackers, third-party SDKs, or publisher-operated servers.
+
+Do not place an Admin API Key in screenshots, Git commits, or untrusted software.
+
+### Publication documents
+
+- [MIT License for source code and documentation](LICENSE)
+- [AI-assisted development disclosure](AI_DISCLOSURE.md)
+- [Separate character and AppIcon rights notice](ASSET_LICENSE.md)
+- [Disclaimer](DISCLAIMER.md)
+- [Privacy notice](PRIVACY.md)
+- [Security policy](SECURITY.md)
+- [Third-party notices and asset status](THIRD_PARTY_NOTICES.md)
+- [AI character and AppIcon rights record](ASSET_RIGHTS.md)
+- [Public release checklist](PUBLIC_RELEASE_CHECKLIST.md)
+- [Release notes](RELEASE_NOTES.md)
+- [Contributing guide](CONTRIBUTING.md)
+- [Code of conduct](CODE_OF_CONDUCT.md)
+
+### Licensing scope
+
+Source code and documentation are provided under the [MIT License](LICENSE). The character file `dragon-chibi-neutral-v4.png` and its derived `AppIcon.png` and `AppIcon.icns` are excluded from the MIT License. This project does not separately grant permission to extract, modify, sublicense, or reuse those assets in another product. See [ASSET_LICENSE.md](ASSET_LICENSE.md).
+
+### AI-assisted development disclosure
+
+Most of this project's source code, initial implementations, refactoring suggestions, and portions of its technical documentation were generated or modified with assistance from OpenAI GPT/Codex. The maintainer provided requirements, selected approaches, reviewed and modified the output, ran tests, and decided what to publish. AI assistance does not guarantee correctness, security, or freedom from infringement risk, and does not make this project an official OpenAI product or imply OpenAI endorsement. See [AI_DISCLOSURE.md](AI_DISCLOSURE.md) for the complete multilingual disclosure.
+
+The included GitHub Actions workflow performs macOS tests and local build verification but does not upload or publish a compiled app. GitHub automatically provides source ZIP and tar.gz archives for tags and releases; no App ZIP is attached.
+
+### Refresh behavior
+
+Automatic refresh can be set to 1, 5, or 15 minutes, and usage can also be refreshed immediately. This is polling-based near-real-time monitoring. Any reporting delay in the OpenAI Usage API cannot be eliminated by the desktop app.
