@@ -1,4 +1,5 @@
 import SwiftUI
+import TokenQuotaCore
 
 struct MonitorView: View {
     @ObservedObject var model: MonitorViewModel
@@ -17,6 +18,7 @@ struct MonitorView: View {
             ScrollView {
                 VStack(spacing: 16) {
                     quotaCard
+                    estimatedCostCard
                     breakdown
                     status
                     actionBar
@@ -136,6 +138,45 @@ struct MonitorView: View {
             metric(model.text(.output), model.snapshot.outputTokens, icon: "arrow.up.right", color: .purple)
             metric(model.text(.cachedInput), model.snapshot.cachedInputTokens, icon: "bolt", color: .orange)
             metric(model.text(.requests), model.snapshot.requests, icon: "paperplane", color: .green)
+        }
+    }
+
+    private var estimatedCostCard: some View {
+        HStack(alignment: .top, spacing: 12) {
+            Image(systemName: "dollarsign.circle.fill")
+                .font(.title2)
+                .foregroundStyle(.green)
+
+            VStack(alignment: .leading, spacing: 4) {
+                Text(model.text(.estimatedCost))
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                Text(model.pricingModel.displayName)
+                    .font(.subheadline.weight(.semibold))
+                Text(
+                    "\(model.text(.input)) \(USDFormat.rate(model.pricingModel.inputUSDPerMillion)) · "
+                        + "\(model.text(.cachedInput)) \(USDFormat.rate(model.pricingModel.cachedInputUSDPerMillion)) · "
+                        + "\(model.text(.output)) \(USDFormat.rate(model.pricingModel.outputUSDPerMillion)) / 1M"
+                )
+                .font(.caption2)
+                .foregroundStyle(.secondary)
+                .fixedSize(horizontal: false, vertical: true)
+            }
+
+            Spacer(minLength: 8)
+
+            Text("≈ \(model.estimatedCostText)")
+                .font(.system(size: 20, weight: .bold, design: .rounded))
+                .foregroundStyle(Color(red: 0.20, green: 0.48, blue: 0.30))
+                .monospacedDigit()
+                .lineLimit(1)
+                .minimumScaleFactor(0.65)
+        }
+        .padding(12)
+        .background(Color.green.opacity(0.08), in: RoundedRectangle(cornerRadius: 12))
+        .overlay {
+            RoundedRectangle(cornerRadius: 12)
+                .stroke(Color.green.opacity(0.20))
         }
     }
 
@@ -281,6 +322,41 @@ struct MonitorView: View {
                 .frame(width: 150)
             }
 
+            VStack(alignment: .leading, spacing: 5) {
+                HStack {
+                    Text(model.text(.pricingModel))
+                    Spacer()
+                    Picker(model.text(.pricingModel), selection: $model.pricingModel) {
+                        ForEach(PricingModel.allCases) { pricingModel in
+                            Text(pricingModel.displayName).tag(pricingModel)
+                        }
+                    }
+                    .labelsHidden()
+                    .frame(width: 150)
+                }
+                Text(
+                    "\(model.text(.pricePerMillion))："
+                        + "\(model.text(.input)) \(USDFormat.rate(model.pricingModel.inputUSDPerMillion)) · "
+                        + "\(model.text(.cachedInput)) \(USDFormat.rate(model.pricingModel.cachedInputUSDPerMillion)) · "
+                        + "\(model.text(.output)) \(USDFormat.rate(model.pricingModel.outputUSDPerMillion))"
+                )
+                .font(.caption2)
+                .foregroundStyle(.secondary)
+                .fixedSize(horizontal: false, vertical: true)
+            }
+
+            HStack {
+                Text(model.text(.bubbleDisplay))
+                Spacer()
+                Picker(model.text(.bubbleDisplay), selection: $model.widgetBubbleContent) {
+                    ForEach(WidgetBubbleContent.allCases) { content in
+                        Text(content.label(language: model.language)).tag(content)
+                    }
+                }
+                .labelsHidden()
+                .frame(width: 150)
+            }
+
             HStack {
                 Text(model.text(.automaticSync))
                 Spacer()
@@ -309,6 +385,10 @@ struct MonitorView: View {
             Text(model.text(.calculation))
                 .font(.caption.bold())
             Text(model.text(.calculationDetails))
+                .font(.caption2)
+                .foregroundStyle(.secondary)
+                .fixedSize(horizontal: false, vertical: true)
+            Text(model.text(.pricingDisclaimer))
                 .font(.caption2)
                 .foregroundStyle(.secondary)
                 .fixedSize(horizontal: false, vertical: true)

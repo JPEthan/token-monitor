@@ -1,6 +1,6 @@
 # 免責聲明 / Disclaimer
 
-最後更新：2026-08-25
+最後更新：2026-08-26
 
 ## 繁體中文
 
@@ -10,7 +10,7 @@
 
 ### 用量與剩餘值只是輔助資訊
 
-本軟體讀取 OpenAI Organization Usage API 回傳的彙總用量，並以使用者自行設定的月度 Token 額度計算「剩餘」。它不是 OpenAI 帳單、付款、信用額度、硬性限額、ChatGPT Plus／Pro 訊息額度或單次對話 context window 的官方讀數。API 延遲、回應格式、帳戶設定、時區或軟體錯誤都可能造成延遲、不完整或不準確的顯示；請以 OpenAI 官方用量與帳單頁面為準。
+本軟體讀取 OpenAI Organization Usage API 回傳的彙總用量，並以使用者自行設定的月度 Token 額度計算「剩餘」，也可假設全部用量使用所選模型，依程式內建的標準短上下文文字 Token 單價推算美元花銷。預估不包含長上下文、Batch／Flex／Priority、區域處理、Cache Write、工具呼叫或其他費用；模型價格也可能變動。這些數字不是 OpenAI 帳單、付款、信用額度、硬性限額、ChatGPT Plus／Pro 訊息額度或單次對話 context window 的官方讀數。API 延遲、價格變更、回應格式、帳戶設定、時區或軟體錯誤都可能造成延遲、不完整或不準確的顯示；請以 OpenAI 官方用量與帳單頁面為準。
 
 ### 高權限憑證警告
 
@@ -36,7 +36,7 @@ OpenAI API、平台可用性、政策、價格、資料處理與帳戶權限由 
 
 “Token Monitor”是独立制作的第三方工具，不是 OpenAI 官方产品，也未获 OpenAI 赞助、认可、背书或合作。OpenAI、ChatGPT 及相关标志属于各自权利人。
 
-本软件显示的“剩余”是用 OpenAI Organization Usage API 的汇总用量减去用户自定义月度额度所得的辅助估算；它不是官方账单、付款、信用额度、ChatGPT Plus／Pro 消息额度或 context window 读数。请以 OpenAI 官方页面为准。
+本软件显示的“剩余”是用 OpenAI Organization Usage API 的汇总用量减去用户自定义月度额度所得的辅助估算；美元花销则假设全部用量使用所选模型，并按内置的标准短上下文文字 Token 单价推算。估算不包含长上下文、Batch／Flex／Priority、区域处理、Cache Write、工具调用或其他费用，价格也可能变动。它不是官方账单、付款、信用额度、ChatGPT Plus／Pro 消息额度或 context window 读数。请以 OpenAI 官方页面为准。
 
 本功能需要高权限的组织 Admin API Key。仅应在信任 App、审查过源码或能够验证构建来源时使用；不要把密钥放入截图、Issue、聊天、日志或公开仓库。
 
@@ -54,7 +54,7 @@ Token Monitor is an independently developed third-party utility. It is not an of
 
 ### Usage and “remaining” values are informational estimates
 
-The app reads aggregate usage returned by the OpenAI Organization Usage API and subtracts it from a monthly token amount configured by the user. It is not an official billing statement, payment or credit limit, enforced quota, ChatGPT Plus/Pro message limit, or conversation context-window reading. API delays, response changes, account configuration, time zones, and software defects may make values delayed, incomplete, or inaccurate. Refer to the official OpenAI usage and billing surfaces for authoritative information.
+The app reads aggregate usage returned by the OpenAI Organization Usage API and subtracts it from a monthly token amount configured by the user. It can also assume all usage used one selected model and estimate USD cost from built-in standard short-context text-token rates. The estimate excludes long-context, Batch/Flex/Priority, regional processing, cache-write, tool-call, and other charges, and model prices may change. These values are not an official billing statement, payment or credit limit, enforced quota, ChatGPT Plus/Pro message limit, or conversation context-window reading. API delays, pricing changes, response changes, account configuration, time zones, and software defects may make values delayed, incomplete, or inaccurate. Refer to the official OpenAI usage and billing surfaces for authoritative information.
 
 ### Privileged credential warning
 

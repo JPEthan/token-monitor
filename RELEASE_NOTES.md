@@ -1,5 +1,12 @@
 # Release Notes
 
+## 1.6.0-beta.1 — USD cost estimate pre-release
+
+- Added a direct USD cost estimate based on the current month's uncached input, cached input, and output token totals.
+- Added selectable GPT-5.6 Sol, Terra, and Luna pricing scenarios using OpenAI standard short-context text-token rates checked on 2026-08-26.
+- Added a Settings option to switch the desktop character bubble between token usage and estimated cost.
+- Added Traditional Chinese, Simplified Chinese, and English pricing explanations, limitations, privacy text, and regression coverage.
+
 ## 1.5.0 — Token Monitor open-source candidate
 
 - Adopted a source-only GitHub publication policy: no precompiled `.app`, DMG, PKG, or App ZIP is published.

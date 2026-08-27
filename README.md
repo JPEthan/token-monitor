@@ -4,11 +4,11 @@
 
 ## 繁體中文
 
-> **非官方第三方工具：** 本專案不是 OpenAI 官方產品，也未獲 OpenAI 贊助、認可、背書或合作。顯示的「剩餘 Token」是使用者自訂額度減去 API 彙總用量所得的輔助估算，不是官方帳單、硬性限額、ChatGPT 訊息額度或 context window。使用前請閱讀 [免責聲明](DISCLAIMER.md) 與 [隱私說明](PRIVACY.md)。
+> **非官方第三方工具：** 本專案不是 OpenAI 官方產品，也未獲 OpenAI 贊助、認可、背書或合作。顯示的「剩餘 Token」與「預估花銷」都是依 API 彙總用量計算的輔助估算，不是官方帳單、硬性限額、ChatGPT 訊息額度或 context window。使用前請閱讀 [免責聲明](DISCLAIMER.md) 與 [隱私說明](PRIVACY.md)。
 
-這是一個常駐 macOS 選單列的 OpenAI API Token 用量監視器。它會讀取 OpenAI 官方 Organization Usage API，顯示本月的輸入、輸出、快取輸入、請求次數，以及依照自訂月度 Token 額度計算的剩餘量。
+這是一個常駐 macOS 選單列的 OpenAI API Token 用量監視器。它會讀取 OpenAI 官方 Organization Usage API，顯示本月的輸入、輸出、快取輸入、請求次數、依照自訂月度 Token 額度計算的剩餘量，以及按 GPT-5.6 Sol／Terra／Luna 標準文字單價推算的美元花銷。
 
-按下「刷新並顯示」後，程式會在桌面右下角顯示一個永遠置頂、可拖曳的透明角色小工具。泡泡內顯示剩餘與已用 Token；角色使用使用者提供的白紫色 AI 生成龍族 Q 版透明圖。小工具右上角可重新刷新或隱藏。
+按下「刷新並顯示」後，程式會在桌面右下角顯示一個永遠置頂、可拖曳的透明角色小工具。泡泡可在設定中選擇顯示 Token 使用量或美元預估花銷；角色使用使用者提供的白紫色 AI 生成龍族 Q 版透明圖。小工具右上角可重新刷新或隱藏。
 
 - 點擊龍娘本體會產生 Q 彈動畫、立即刷新，並顯示 Token 氣泡
 - 啟動 App 後桌寵會自動顯示；也能從選單列按「刷新並顯示」重新叫出
@@ -20,6 +20,8 @@
 - 人物使用高品質插值與柔化邊緣圖層，縮放時減少鋸齒
 - 設定可切換繁體中文、簡體中文與 English，桌面氣泡會同步切換
 - 點擊人物或手動刷新時可播放橡皮鴨音效，並可在設定中關閉或試聽
+- 可選 GPT-5.6 Sol、Terra 或 Luna 作為美元估價模型
+- 主面板直接顯示本月預估花銷，人物氣泡可切換顯示 Token 或預估花銷
 - 關閉設定後會同步縮回實際選單視窗高度，不殘留上下透明區域
 - App 使用目前的白紫色 Q 版龍娘人物作為 macOS 徽標
 
@@ -35,6 +37,24 @@ OpenAI Usage API 只提供已使用量，沒有官方的 `remaining_tokens` 欄�
 
 這不是 ChatGPT Plus／Pro 的訊息額度，也不是單次對話 context window 的剩餘 Token。
 
+### 預估花銷如何計算
+
+程式使用下列 OpenAI API 標準短上下文文字價格（2026-08-26 查核，每 100 萬 Token、美元）：
+
+| 模型 | Input | Cached input | Output |
+|---|---:|---:|---:|
+| GPT-5.6 Sol | US$4.00 | US$0.40 | US$20.00 |
+| GPT-5.6 Terra | US$2.00 | US$0.20 | US$12.00 |
+| GPT-5.6 Luna | US$0.20 | US$0.02 | US$1.20 |
+
+```text
+預估花銷 = 非快取輸入 × Input 單價
+         + 快取輸入 × Cached input 單價
+         + 輸出 × Output 單價
+```
+
+`input_cached_tokens` 是 `input_tokens` 的一部分，程式會先從總輸入中拆出快取部分，不會同時按完整 Input 價格和 Cached input 價格重複計費。估算假設本月全部 Token 都使用設定中選擇的同一模型，不包含超過 272K Input 的長上下文加價、Batch／Flex／Priority、區域處理、Cache Write、工具呼叫或其他費用。OpenAI 價格可能變動，正式金額必須以 OpenAI 帳單為準；這也不是 ChatGPT 訂閱費用。
+
 ### 使用條件
 
 - macOS 13 或以上；目前只公開原始碼，已在 Apple silicon（arm64）開發環境驗證
@@ -46,12 +66,13 @@ OpenAI Usage API 只提供已使用量，沒有官方的 `remaining_tokens` 欄�
 - [Completions Usage API](https://developers.openai.com/api/reference/ruby/resources/admin/subresources/organization/subresources/usage/methods/completions)
 - [Organization Usage 回應欄位](https://developers.openai.com/api/reference/resources/admin/subresources/organization/subresources/usage)
 - [Admin API Keys](https://developers.openai.com/api/reference/resources/admin/subresources/organization/subresources/admin_api_keys)
+- [GPT-5.6 模型與標準價格](https://developers.openai.com/api/docs/models)
 
 ### 公開範圍
 
-本 GitHub 專案只公開原始碼、測試、建置腳本、必要人物／圖示素材及法律文件，**不提供預先編譯的 `.app`、DMG、PKG 或 App ZIP 下載**。`.build/`、`dist/`、`release-*/` 與本機編譯產物均由 `.gitignore` 排除。
+本 GitHub 專案只公開原始碼、測試、建置腳本、必要人物／圖示素材及法律文件，**不提供預先編譯的 `.app`、DMG、PKG 或 App ZIP 下載**。
 
-Apple Developer ID 簽署與 Apple 公證只適用於發布者向其他人提供可執行 App 的情況；單純公開原始碼不需要 Apple 公證。使用者需要自行審查並從原始碼建置。
+Apple Developer ID 簽署與 Apple 公證只適用於發布者向其他人提供可執行 App 的情況；單純公開原始碼不需要 Apple 公證。
 
 > **憑證警告：** Admin API Key 是高權限憑證，只應由獲授權的組織管理者使用。不要把真實金鑰放入原始碼、Issue、Pull Request、截圖、聊天或日誌。從 App 刪除 Keychain 項目也不等於在 OpenAI 撤銷金鑰。
 
@@ -88,7 +109,7 @@ chmod +x build-public-release.sh verify-public-release.sh
 ### 資安設計
 
 - Admin API Key 只儲存在 macOS Keychain。
-- UserDefaults 只保存自訂 Token 額度、更新頻率、顯示語言、音效開關、桌寵位置與左右鏡像方向。
+- UserDefaults 只保存自訂 Token 額度、更新頻率、顯示語言、音效開關、估價模型、人物氣泡顯示模式、桌寵位置與左右鏡像方向。
 - 程式只向 `https://api.openai.com/v1/organization/usage/completions` 發出讀取請求。
 - 桌面角色圖片隨 App 一起打包，不會從網路即時下載。
 - 原始碼、設定檔與打包檔不含 API Key。
@@ -131,11 +152,11 @@ Admin API Key 權限很高，請勿將金鑰貼進截圖、提交到 Git，或�
 
 ## English
 
-> **Unofficial third-party utility:** This project is not an official OpenAI product and is not sponsored, approved, endorsed, or supported by OpenAI. The displayed “remaining tokens” value is an informational estimate calculated by subtracting aggregate API usage from a user-defined budget. It is not an official bill, enforced limit, ChatGPT message allowance, or context-window reading. Read the [Disclaimer](DISCLAIMER.md) and [Privacy Notice](PRIVACY.md) before use.
+> **Unofficial third-party utility:** This project is not an official OpenAI product and is not sponsored, approved, endorsed, or supported by OpenAI. The displayed “remaining tokens” and “estimated cost” values are informational calculations based on aggregate API usage. They are not an official bill, enforced limit, ChatGPT message allowance, or context-window reading. Read the [Disclaimer](DISCLAIMER.md) and [Privacy Notice](PRIVACY.md) before use.
 
-Token Monitor is a macOS menu-bar utility for monitoring OpenAI API token usage. It reads the official OpenAI Organization Usage API and displays the current month's input tokens, output tokens, cached input tokens, request count, and remaining amount under a user-defined monthly token budget.
+Token Monitor is a macOS menu-bar utility for monitoring OpenAI API token usage. It reads the official OpenAI Organization Usage API and displays the current month's input tokens, output tokens, cached input tokens, request count, remaining amount under a user-defined monthly token budget, and a USD estimate based on GPT-5.6 Sol, Terra, or Luna standard text-token prices.
 
-Selecting “Refresh and Show” displays an always-on-top, draggable, transparent desktop character widget near the lower-right corner of the screen. Its speech bubble shows used and remaining tokens. The character uses the user-supplied white-and-purple AI-generated chibi dragon artwork.
+Selecting “Refresh and Show” displays an always-on-top, draggable, transparent desktop character widget near the lower-right corner of the screen. Its bubble can show token usage or the USD estimate, as selected in Settings. The character uses the user-supplied white-and-purple AI-generated chibi dragon artwork.
 
 - Clicking the character plays a spring animation, refreshes usage immediately, and displays the token bubble.
 - The desktop character appears automatically when the app starts and can be shown again from the menu bar.
@@ -147,6 +168,8 @@ Selecting “Refresh and Show” displays an always-on-top, draggable, transpare
 - High-quality interpolation and a softened edge layer reduce visible aliasing while scaling the character.
 - Settings support Traditional Chinese, Simplified Chinese, and English; the desktop bubble changes language immediately.
 - Clicking the character or refreshing manually can play a synthesized rubber-duck sound, which can be disabled or previewed in Settings.
+- GPT-5.6 Sol, Terra, or Luna can be selected as the pricing scenario.
+- The main panel shows the estimated monthly cost directly, while the character bubble can switch between tokens and estimated cost.
 - Closing Settings restores the actual compact menu-window height without leaving transparent space above or below the UI.
 - The current white-and-purple chibi dragon artwork is also used as the macOS app icon.
 
@@ -162,6 +185,24 @@ Custom budget remaining = configured monthly token budget - this month's input_t
 
 This value is not the ChatGPT Plus/Pro message allowance and is not the remaining context window of an individual conversation.
 
+### How estimated cost is calculated
+
+The app uses the following OpenAI API standard short-context text-token prices, checked on 2026-08-26 and expressed in USD per one million tokens:
+
+| Model | Input | Cached input | Output |
+|---|---:|---:|---:|
+| GPT-5.6 Sol | US$4.00 | US$0.40 | US$20.00 |
+| GPT-5.6 Terra | US$2.00 | US$0.20 | US$12.00 |
+| GPT-5.6 Luna | US$0.20 | US$0.02 | US$1.20 |
+
+```text
+Estimated cost = uncached input × input rate
+               + cached input × cached-input rate
+               + output × output rate
+```
+
+Because `input_cached_tokens` is a subset of `input_tokens`, the cached portion is split out before applying prices and is not charged at both rates. The estimate assumes all monthly tokens used the single model selected in Settings. It excludes the long-context uplift above 272K input tokens, Batch/Flex/Priority processing, regional processing, cache writes, tool calls, and other charges. OpenAI pricing may change, so the OpenAI invoice is authoritative. This is not a ChatGPT subscription charge.
+
 ### Requirements
 
 - macOS 13 or later. This repository is source-only and has been verified in an Apple silicon (arm64) development environment.
@@ -173,10 +214,11 @@ Official references:
 - [Completions Usage API](https://developers.openai.com/api/reference/ruby/resources/admin/subresources/organization/subresources/usage/methods/completions)
 - [Organization Usage response fields](https://developers.openai.com/api/reference/resources/admin/subresources/organization/subresources/usage)
 - [Admin API Keys](https://developers.openai.com/api/reference/resources/admin/subresources/organization/subresources/admin_api_keys)
+- [GPT-5.6 models and standard pricing](https://developers.openai.com/api/docs/models)
 
 ### Publication scope
 
-This GitHub project publishes source code, tests, build scripts, required character/icon assets, and legal documents only. It **does not provide a precompiled `.app`, DMG, PKG, or App ZIP download**. `.build/`, `dist/`, `release-*/`, and local build products are excluded by `.gitignore`.
+This GitHub project publishes source code, tests, build scripts, required character/icon assets, and legal documents only. It **does not provide a precompiled `.app`, DMG, PKG, or App ZIP download**.
 
 Developer ID signing and Apple notarization are required when a publisher distributes an executable app to other users; they are not required for source-only publication. Users must review and build the app from source themselves.
 
@@ -215,7 +257,7 @@ chmod +x build-public-release.sh verify-public-release.sh
 ### Security design
 
 - The Admin API Key is stored only in macOS Keychain.
-- UserDefaults stores only the custom token budget, refresh interval, display language, sound preference, desktop-widget position, and mirrored orientation.
+- UserDefaults stores only the custom token budget, refresh interval, display language, sound preference, pricing model, bubble display mode, desktop-widget position, and mirrored orientation.
 - The app sends usage requests only to `https://api.openai.com/v1/organization/usage/completions`.
 - Character artwork is bundled locally and is never fetched dynamically from the network.
 - Source files, configuration files, and release packages do not contain an API key.

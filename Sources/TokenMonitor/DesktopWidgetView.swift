@@ -183,7 +183,12 @@ struct DesktopWidgetView: View {
 
     private var primaryValue: String {
         guard model.hasSavedAPIKey else { return model.text(.notConfigured) }
-        return "\(model.text(.remainingShort)) \(TokenFormat.compact(model.remainingTokens))"
+        switch model.widgetBubbleContent {
+        case .tokenUsage:
+            return "\(model.text(.remainingShort)) \(TokenFormat.compact(model.remainingTokens))"
+        case .estimatedCost:
+            return "≈ \(model.estimatedCostText)"
+        }
     }
 
     private var secondaryValue: String {
@@ -193,7 +198,12 @@ struct DesktopWidgetView: View {
         if model.statusIsError {
             return model.text(.syncFailed)
         }
-        return "\(model.text(.used)) \(TokenFormat.compact(model.usedTokens)) / \(TokenFormat.compact(model.monthlyTokenLimit))"
+        switch model.widgetBubbleContent {
+        case .tokenUsage:
+            return "\(model.text(.used)) \(TokenFormat.compact(model.usedTokens)) / \(TokenFormat.compact(model.monthlyTokenLimit))"
+        case .estimatedCost:
+            return "\(model.pricingModel.displayName) · \(model.text(.estimatedShort))"
+        }
     }
 
     private var mascotX: CGFloat { presentation.isMirrored ? 165 : 205 }

@@ -10,6 +10,15 @@ MODULE_CACHE_DIR="$PROJECT_DIR/.build/module-cache"
 SWIFTPM_CACHE_DIR="$PROJECT_DIR/.build/swiftpm-cache"
 SWIFTPM_CONFIG_DIR="$PROJECT_DIR/.build/swiftpm-config"
 SWIFTPM_SECURITY_DIR="$PROJECT_DIR/.build/swiftpm-security"
+APP_STAGING_ROOT="$(mktemp -d -t TokenMonitorAppBuild)"
+STAGED_APP_DIR="$APP_STAGING_ROOT/$APP_NAME.app"
+APP_VERIFY_ROOT="$(mktemp -d -t TokenMonitorAppVerification)"
+
+cleanup() {
+    /bin/rm -rf "$APP_STAGING_ROOT"
+    /bin/rm -rf "$APP_VERIFY_ROOT"
+}
+trap cleanup EXIT
 
 if [[ -d "/Library/Developer/CommandLineTools/SDKs/MacOSX15.4.sdk" ]]; then
     SDK_PATH="/Library/Developer/CommandLineTools/SDKs/MacOSX15.4.sdk"
@@ -46,19 +55,18 @@ BIN_DIR="$(
     swift build -c release --show-bin-path "${SWIFTPM_ARGS[@]}"
 )"
 
-/bin/rm -rf "$APP_DIR"
 /bin/mkdir -p \
-    "$APP_DIR/Contents/MacOS" \
-    "$APP_DIR/Contents/Resources/Mascot" \
-    "$APP_DIR/Contents/Resources/Legal"
-/usr/bin/ditto --norsrc "$BIN_DIR/$EXECUTABLE_NAME" "$APP_DIR/Contents/MacOS/$EXECUTABLE_NAME"
-/usr/bin/strip -S -x "$APP_DIR/Contents/MacOS/$EXECUTABLE_NAME"
-/usr/bin/ditto --norsrc "$PROJECT_DIR/Resources/Info.plist" "$APP_DIR/Contents/Info.plist"
-/usr/bin/ditto --norsrc "$PROJECT_DIR/Resources/AppIcon.icns" "$APP_DIR/Contents/Resources/AppIcon.icns"
-/usr/bin/ditto --norsrc "$PROJECT_DIR/Resources/AppIcon.png" "$APP_DIR/Contents/Resources/AppIcon.png"
-/usr/bin/ditto --norsrc \
+    "$STAGED_APP_DIR/Contents/MacOS" \
+    "$STAGED_APP_DIR/Contents/Resources/Mascot" \
+    "$STAGED_APP_DIR/Contents/Resources/Legal"
+/bin/cp "$BIN_DIR/$EXECUTABLE_NAME" "$STAGED_APP_DIR/Contents/MacOS/$EXECUTABLE_NAME"
+/usr/bin/strip -S -x "$STAGED_APP_DIR/Contents/MacOS/$EXECUTABLE_NAME"
+/bin/cp "$PROJECT_DIR/Resources/Info.plist" "$STAGED_APP_DIR/Contents/Info.plist"
+/bin/cp "$PROJECT_DIR/Resources/AppIcon.icns" "$STAGED_APP_DIR/Contents/Resources/AppIcon.icns"
+/bin/cp "$PROJECT_DIR/Resources/AppIcon.png" "$STAGED_APP_DIR/Contents/Resources/AppIcon.png"
+/bin/cp \
     "$PROJECT_DIR/Resources/Mascot/dragon-chibi-neutral-v4.png" \
-    "$APP_DIR/Contents/Resources/Mascot/dragon-chibi-neutral-v4.png"
+    "$STAGED_APP_DIR/Contents/Resources/Mascot/dragon-chibi-neutral-v4.png"
 
 for legal_document in \
     LICENSE \
@@ -70,16 +78,21 @@ for legal_document in \
     ASSET_RIGHTS.md \
     ASSET_LICENSE.md
 do
-    /usr/bin/ditto --norsrc \
+    /bin/cp \
         "$PROJECT_DIR/$legal_document" \
-        "$APP_DIR/Contents/Resources/Legal/$legal_document"
+        "$STAGED_APP_DIR/Contents/Resources/Legal/$legal_document"
 done
 
-/usr/bin/xattr -cr "$APP_DIR"
-/usr/bin/codesign --force --deep --sign - "$APP_DIR"
+/usr/bin/xattr -cr "$STAGED_APP_DIR"
+/usr/bin/codesign --force --deep --sign - "$STAGED_APP_DIR"
 
+/bin/mkdir -p "$DIST_DIR"
 /bin/rm -f "$DIST_DIR/$APP_NAME.zip"
-/usr/bin/ditto --norsrc -c -k --keepParent "$APP_DIR" "$DIST_DIR/$APP_NAME.zip"
+/usr/bin/ditto --norsrc -c -k --keepParent "$STAGED_APP_DIR" "$DIST_DIR/$APP_NAME.zip"
+/bin/rm -rf "$APP_DIR"
+/usr/bin/ditto -x -k --norsrc "$DIST_DIR/$APP_NAME.zip" "$DIST_DIR"
+/usr/bin/ditto -x -k --norsrc "$DIST_DIR/$APP_NAME.zip" "$APP_VERIFY_ROOT"
+/usr/bin/codesign --verify --deep --strict "$APP_VERIFY_ROOT/$APP_NAME.app"
 
 echo "$APP_DIR"
 echo "$DIST_DIR/$APP_NAME.zip"

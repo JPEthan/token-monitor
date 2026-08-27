@@ -29,6 +29,14 @@ enum L10nKey: CaseIterable {
     case output
     case cachedInput
     case requests
+    case estimatedCost
+    case estimatedShort
+    case pricingModel
+    case pricePerMillion
+    case bubbleDisplay
+    case bubbleTokenUsage
+    case bubbleEstimatedCost
+    case pricingDisclaimer
     case updated
     case syncing
     case refreshAndShow
@@ -100,6 +108,14 @@ enum L10n {
         case .output: "輸出"
         case .cachedInput: "其中快取輸入"
         case .requests: "請求次數"
+        case .estimatedCost: "本月預估花銷"
+        case .estimatedShort: "預估花銷"
+        case .pricingModel: "估價模型"
+        case .pricePerMillion: "每 100 萬 Token 的標準價格"
+        case .bubbleDisplay: "人物氣泡顯示"
+        case .bubbleTokenUsage: "Token 使用量"
+        case .bubbleEstimatedCost: "預估花銷（美元）"
+        case .pricingDisclaimer: "依所選模型的 OpenAI API 標準短上下文文字價格估算（價格基準：2026-08-26）。假設本月全部 Token 都使用此模型；不包含長上下文加價、Batch／Flex／Priority、區域處理、Cache Write、工具呼叫或其他費用。價格可能變動，請以 OpenAI 正式帳單為準。"
         case .updated: "更新"
         case .syncing: "同步中…"
         case .refreshAndShow: "刷新並顯示"
@@ -122,7 +138,7 @@ enum L10n {
         case .duckSoundHelp: "點擊人物或手動刷新時播放"
         case .previewSound: "試聽"
         case .calculation: "計算方式"
-        case .calculationDetails: "剩餘 = 你設定的月度額度 − 本月輸入與輸出 Token。快取輸入已包含在輸入 Token 中，不會重複加總。這不是 ChatGPT Plus／Pro 的訊息額度。"
+        case .calculationDetails: "剩餘 Token = 自訂月度額度 − 輸入 − 輸出。預估花銷 = 非快取輸入 × Input 單價 + 快取輸入 × Cached Input 單價 + 輸出 × Output 單價。快取輸入已包含在總輸入中，計算時會先拆分，不會重複收費。這是 OpenAI API 估算，不是 ChatGPT Plus／Pro 訂閱費用。"
         case .needsKey: "請先設定 OpenAI Admin API Key。"
         case .readingUsage: "正在讀取本月 Token 用量…"
         case .enterKey: "請輸入 OpenAI Admin API Key。"
@@ -160,6 +176,14 @@ enum L10n {
         case .output: "输出"
         case .cachedInput: "其中缓存输入"
         case .requests: "请求次数"
+        case .estimatedCost: "本月预估花销"
+        case .estimatedShort: "预估花销"
+        case .pricingModel: "估价模型"
+        case .pricePerMillion: "每 100 万 Token 的标准价格"
+        case .bubbleDisplay: "人物气泡显示"
+        case .bubbleTokenUsage: "Token 使用量"
+        case .bubbleEstimatedCost: "预估花销（美元）"
+        case .pricingDisclaimer: "按所选模型的 OpenAI API 标准短上下文文字价格估算（价格基准：2026-08-26）。假设本月全部 Token 都使用该模型；不包含长上下文加价、Batch／Flex／Priority、区域处理、Cache Write、工具调用或其他费用。价格可能变动，请以 OpenAI 正式账单为准。"
         case .updated: "更新"
         case .syncing: "同步中…"
         case .refreshAndShow: "刷新并显示"
@@ -182,7 +206,7 @@ enum L10n {
         case .duckSoundHelp: "点击人物或手动刷新时播放"
         case .previewSound: "试听"
         case .calculation: "计算方式"
-        case .calculationDetails: "剩余 = 你设置的月度额度 − 本月输入与输出 Token。缓存输入已包含在输入 Token 中，不会重复计算。这不是 ChatGPT Plus／Pro 的消息额度。"
+        case .calculationDetails: "剩余 Token = 自定义月度额度 − 输入 − 输出。预估花销 = 非缓存输入 × Input 单价 + 缓存输入 × Cached Input 单价 + 输出 × Output 单价。缓存输入已包含在总输入中，计算时会先拆分，不会重复收费。这是 OpenAI API 估算，不是 ChatGPT Plus／Pro 订阅费用。"
         case .needsKey: "请先设置 OpenAI Admin API Key。"
         case .readingUsage: "正在读取本月 Token 用量…"
         case .enterKey: "请输入 OpenAI Admin API Key。"
@@ -220,6 +244,14 @@ enum L10n {
         case .output: "Output"
         case .cachedInput: "Cached input"
         case .requests: "Requests"
+        case .estimatedCost: "Estimated monthly cost"
+        case .estimatedShort: "Estimated cost"
+        case .pricingModel: "Pricing model"
+        case .pricePerMillion: "Standard price per 1M tokens"
+        case .bubbleDisplay: "Character bubble"
+        case .bubbleTokenUsage: "Token usage"
+        case .bubbleEstimatedCost: "Estimated cost (USD)"
+        case .pricingDisclaimer: "Estimated from the selected model's standard short-context OpenAI API text-token prices (pricing reference: 2026-08-26). It assumes all monthly tokens used that model and excludes long-context uplifts, Batch/Flex/Priority, regional processing, cache writes, tool calls, and other charges. Prices may change; the OpenAI invoice is authoritative."
         case .updated: "Updated"
         case .syncing: "Syncing…"
         case .refreshAndShow: "Refresh & Show"
@@ -242,7 +274,7 @@ enum L10n {
         case .duckSoundHelp: "Plays when the character or manual refresh is clicked"
         case .previewSound: "Preview"
         case .calculation: "How it is calculated"
-        case .calculationDetails: "Remaining = your monthly limit − this month's input and output tokens. Cached input is already included in input tokens and is not counted twice. This is not the ChatGPT Plus/Pro message limit."
+        case .calculationDetails: "Remaining tokens = custom monthly limit − input − output. Estimated cost = uncached input × input rate + cached input × cached-input rate + output × output rate. Cached input is already included in total input, so it is split out instead of charged twice. This is an OpenAI API estimate, not a ChatGPT Plus/Pro subscription charge."
         case .needsKey: "Set an OpenAI Admin API Key first."
         case .readingUsage: "Reading this month's token usage…"
         case .enterKey: "Enter an OpenAI Admin API Key."

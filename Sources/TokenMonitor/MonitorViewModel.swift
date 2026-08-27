@@ -1,5 +1,6 @@
 import AppKit
 import Foundation
+import TokenQuotaCore
 
 enum RefreshCadence: Int, CaseIterable, Identifiable {
     case oneMinute = 60
@@ -13,6 +14,20 @@ enum RefreshCadence: Int, CaseIterable, Identifiable {
         case .oneMinute: L10n.text(.everyOneMinute, language: language)
         case .fiveMinutes: L10n.text(.everyFiveMinutes, language: language)
         case .fifteenMinutes: L10n.text(.everyFifteenMinutes, language: language)
+        }
+    }
+}
+
+enum WidgetBubbleContent: String, CaseIterable, Identifiable {
+    case tokenUsage
+    case estimatedCost
+
+    var id: String { rawValue }
+
+    func label(language: AppLanguage) -> String {
+        switch self {
+        case .tokenUsage: L10n.text(.bubbleTokenUsage, language: language)
+        case .estimatedCost: L10n.text(.bubbleEstimatedCost, language: language)
         }
     }
 }
@@ -68,11 +83,25 @@ final class MonitorViewModel: ObservableObject {
         }
     }
 
+    @Published var pricingModel: PricingModel {
+        didSet {
+            defaults.set(pricingModel.rawValue, forKey: Keys.pricingModel)
+        }
+    }
+
+    @Published var widgetBubbleContent: WidgetBubbleContent {
+        didSet {
+            defaults.set(widgetBubbleContent.rawValue, forKey: Keys.widgetBubbleContent)
+        }
+    }
+
     private enum Keys {
         static let monthlyTokenLimit = "monthlyTokenLimit"
         static let refreshCadence = "refreshCadence"
         static let language = "language"
         static let soundEffectsEnabled = "soundEffectsEnabled"
+        static let pricingModel = "pricingModel"
+        static let widgetBubbleContent = "widgetBubbleContent"
     }
 
     private let defaults: UserDefaults
@@ -99,6 +128,13 @@ final class MonitorViewModel: ObservableObject {
         self.soundEffectsEnabled = defaults.object(forKey: Keys.soundEffectsEnabled) == nil
             ? true
             : defaults.bool(forKey: Keys.soundEffectsEnabled)
+
+        let savedPricingModel = defaults.string(forKey: Keys.pricingModel)
+        self.pricingModel = PricingModel(rawValue: savedPricingModel ?? "") ?? .terra
+
+        let savedBubbleContent = defaults.string(forKey: Keys.widgetBubbleContent)
+        self.widgetBubbleContent = WidgetBubbleContent(rawValue: savedBubbleContent ?? "")
+            ?? .tokenUsage
     }
 
     var usedTokens: Int64 { snapshot.usedTokens }
@@ -106,6 +142,17 @@ final class MonitorViewModel: ObservableObject {
     var overLimitTokens: Int64 { max(usedTokens - monthlyTokenLimit, 0) }
     var usageFraction: Double {
         min(max(Double(usedTokens) / Double(max(monthlyTokenLimit, 1)), 0), 1)
+    }
+    var estimatedCost: TokenCostEstimate {
+        TokenCostEstimator.estimate(
+            inputTokens: snapshot.inputTokens,
+            cachedInputTokens: snapshot.cachedInputTokens,
+            outputTokens: snapshot.outputTokens,
+            model: pricingModel
+        )
+    }
+    var estimatedCostText: String {
+        USDFormat.amount(estimatedCost.totalUSD)
     }
 
     var menuBarText: String {
@@ -305,5 +352,40 @@ enum TokenFormat {
         if value >= 100 { return String(format: "%.0f", value) }
         if value >= 10 { return String(format: "%.1f", value) }
         return String(format: "%.2f", value)
+    }
+}
+
+enum USDFormat {
+    static func amount(_ value: Decimal) -> String {
+        let number = NSDecimalNumber(decimal: max(value, 0))
+        let absolute = number.doubleValue
+        let fractionDigits: Int
+        switch absolute {
+        case 0:
+            fractionDigits = 2
+        case ..<0.01:
+            fractionDigits = 6
+        case ..<1:
+            fractionDigits = 4
+        default:
+            fractionDigits = 2
+        }
+
+        let formatter = NumberFormatter()
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        formatter.numberStyle = .decimal
+        formatter.usesGroupingSeparator = true
+        formatter.minimumFractionDigits = fractionDigits
+        formatter.maximumFractionDigits = fractionDigits
+        return "US$\(formatter.string(from: number) ?? "0.00")"
+    }
+
+    static func rate(_ value: Decimal) -> String {
+        let formatter = NumberFormatter()
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        formatter.numberStyle = .decimal
+        formatter.minimumFractionDigits = 2
+        formatter.maximumFractionDigits = 2
+        return "US$\(formatter.string(from: NSDecimalNumber(decimal: value)) ?? "0.00")"
     }
 }

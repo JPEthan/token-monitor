@@ -3,10 +3,12 @@ set -euo pipefail
 
 PROJECT_DIR="${0:A:h}"
 DIST_DIR="$PROJECT_DIR/dist"
-VERSION="$(/usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' "$PROJECT_DIR/Resources/Info.plist")"
-APP_DIR="$DIST_DIR/Token Monitor.app"
-APP_ARCHIVE_NAME="Token-Monitor-$VERSION-macOS.zip"
-SOURCE_ARCHIVE_NAME="TokenMonitor-$VERSION-source.zip"
+BUNDLE_VERSION="$(/usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' "$PROJECT_DIR/Resources/Info.plist")"
+BUILD_VERSION="$(/usr/libexec/PlistBuddy -c 'Print :CFBundleVersion' "$PROJECT_DIR/Resources/Info.plist")"
+RELEASE_VERSION="$(/usr/libexec/PlistBuddy -c 'Print :TokenMonitorReleaseVersion' "$PROJECT_DIR/Resources/Info.plist")"
+DIST_APP_DIR="$DIST_DIR/Token Monitor.app"
+APP_ARCHIVE_NAME="Token-Monitor-$RELEASE_VERSION-macOS.zip"
+SOURCE_ARCHIVE_NAME="TokenMonitor-$RELEASE_VERSION-source.zip"
 APP_ARCHIVE="$DIST_DIR/$APP_ARCHIVE_NAME"
 SOURCE_ARCHIVE="$DIST_DIR/$SOURCE_ARCHIVE_NAME"
 CHECKSUMS="$DIST_DIR/SHA256SUMS.txt"
@@ -22,14 +24,17 @@ fail() {
     exit 1
 }
 
-for required in "$APP_DIR" "$APP_ARCHIVE" "$SOURCE_ARCHIVE" "$CHECKSUMS"
+for required in "$DIST_APP_DIR" "$APP_ARCHIVE" "$SOURCE_ARCHIVE" "$CHECKSUMS"
 do
     [[ -e "$required" ]] || fail "缺少 $required"
 done
 
-/usr/bin/codesign --verify --deep --strict "$APP_DIR"
 /usr/bin/unzip -tq "$APP_ARCHIVE"
 /usr/bin/unzip -tq "$SOURCE_ARCHIVE"
+/usr/bin/ditto -x -k --norsrc "$APP_ARCHIVE" "$VERIFY_ROOT/app"
+APP_DIR="$VERIFY_ROOT/app/Token Monitor.app"
+[[ -d "$APP_DIR" ]] || fail "無法解開 App"
+/usr/bin/codesign --verify --deep --strict "$APP_DIR"
 
 app_listing="$(/usr/bin/unzip -Z1 "$APP_ARCHIVE")"
 source_listing="$(/usr/bin/unzip -Z1 "$SOURCE_ARCHIVE")"
@@ -97,7 +102,11 @@ if LC_ALL=C /usr/bin/grep -RIlE 'sk-(admin-|proj-)?[A-Za-z0-9_-]{20,}|BEGIN (RSA
 fi
 
 bundle_version="$(/usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' "$APP_DIR/Contents/Info.plist")"
-[[ "$bundle_version" == "$VERSION" ]] || fail "App 版本與來源版本不一致"
+[[ "$bundle_version" == "$BUNDLE_VERSION" ]] || fail "App Bundle 版本與來源版本不一致"
+build_version="$(/usr/libexec/PlistBuddy -c 'Print :CFBundleVersion' "$APP_DIR/Contents/Info.plist")"
+[[ "$build_version" == "$BUILD_VERSION" ]] || fail "App Build 版本與來源版本不一致"
+release_version="$(/usr/libexec/PlistBuddy -c 'Print :TokenMonitorReleaseVersion' "$APP_DIR/Contents/Info.plist")"
+[[ "$release_version" == "$RELEASE_VERSION" ]] || fail "App 預公開版本與來源版本不一致"
 [[ "$(/usr/libexec/PlistBuddy -c 'Print :CFBundleDisplayName' "$APP_DIR/Contents/Info.plist")" == "Token Monitor" ]] \
     || fail "App 顯示名稱不是 Token Monitor"
 [[ "$(/usr/libexec/PlistBuddy -c 'Print :CFBundleName' "$APP_DIR/Contents/Info.plist")" == "Token Monitor" ]] \

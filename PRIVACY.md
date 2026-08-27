@@ -9,7 +9,7 @@
 ## 本機儲存
 
 - **OpenAI Admin API Key**：儲存在 macOS Keychain，不寫入 UserDefaults、專案、一般設定檔或發布包。
-- **偏好設定**：月度 Token 額度、自動同步頻率、顯示語言、音效開關、桌寵位置與左右方向儲存在 macOS UserDefaults。
+- **偏好設定**：月度 Token 額度、自動同步頻率、顯示語言、音效開關、估價模型、人物氣泡顯示模式、桌寵位置與左右方向儲存在 macOS UserDefaults。
 - **用量快照**：輸入 Token、輸出 Token、快取輸入、請求次數與最近更新時間只保存在執行中 App 的記憶體；本版本不建立永久用量歷史資料庫。
 - **橡皮鴨音效**：在本機即時生成，不會錄音或上傳音訊。
 
@@ -42,4 +42,4 @@ Usage API 回傳的是彙總用量，但組織用量仍可能是敏感的營運�
 
 ## English summary
 
-The app contains no ads, analytics, telemetry, trackers, third-party SDKs, publisher accounts, or publisher-operated servers. The OpenAI Admin API Key is stored in macOS Keychain and sent only over HTTPS to the official OpenAI Organization Usage endpoint at launch when a key is already stored, during scheduled refreshes, or after a manual refresh. Aggregate usage is held in memory; ordinary preferences are stored in UserDefaults. The app uses an ephemeral, no-cookie, no-disk-cache network session. Remove the local Keychain item from Settings before uninstalling; local removal does not revoke the credential at OpenAI, so revoke or rotate it through OpenAI when needed. OpenAI's own processing is governed by its terms and data controls.
+The app contains no ads, analytics, telemetry, trackers, third-party SDKs, publisher accounts, or publisher-operated servers. The OpenAI Admin API Key is stored in macOS Keychain and sent only over HTTPS to the official OpenAI Organization Usage endpoint at launch when a key is already stored, during scheduled refreshes, or after a manual refresh. Aggregate usage and the derived cost estimate are held in memory; ordinary preferences—including the selected pricing model and bubble display mode—are stored in UserDefaults. The app uses an ephemeral, no-cookie, no-disk-cache network session. Remove the local Keychain item from Settings before uninstalling; local removal does not revoke the credential at OpenAI, so revoke or rotate it through OpenAI when needed. OpenAI's own processing is governed by its terms and data controls.

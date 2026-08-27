@@ -60,6 +60,31 @@ do {
         try expect(totals.totalUsedTokens == 1_500, "總使用量應為 input + output")
     }
 
+    try run("Sol、Terra、Luna 美元估價會分開計算快取輸入") {
+        let sol = TokenCostEstimator.estimate(
+            inputTokens: 1_000_000,
+            cachedInputTokens: 200_000,
+            outputTokens: 100_000,
+            model: .sol
+        )
+        let terra = TokenCostEstimator.estimate(
+            inputTokens: 1_000_000,
+            cachedInputTokens: 200_000,
+            outputTokens: 100_000,
+            model: .terra
+        )
+        let luna = TokenCostEstimator.estimate(
+            inputTokens: 1_000_000,
+            cachedInputTokens: 200_000,
+            outputTokens: 100_000,
+            model: .luna
+        )
+
+        try expect(sol.totalUSD == Decimal(string: "5.28"), "Sol 估價應為 US$5.28")
+        try expect(terra.totalUSD == Decimal(string: "2.84"), "Terra 估價應為 US$2.84")
+        try expect(luna.totalUSD == Decimal(string: "0.284"), "Luna 估價應為 US$0.284")
+    }
+
     try run("剩餘 Token 與超額狀態正確") {
         let under = TokenQuotaSnapshot(
             limit: 2_000,
