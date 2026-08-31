@@ -357,6 +357,33 @@ struct MonitorView: View {
                 .frame(width: 150)
             }
 
+            VStack(alignment: .leading, spacing: 5) {
+                HStack {
+                    Text(model.text(.mascotSize))
+                    Spacer()
+                    Text("\(MascotScaleSetting.percentage(model.mascotScale))%")
+                        .foregroundStyle(.secondary)
+                        .monospacedDigit()
+                }
+
+                HStack(spacing: 8) {
+                    Image(systemName: "minus.magnifyingglass")
+                        .foregroundStyle(.secondary)
+                    Slider(
+                        value: $model.mascotScale,
+                        in: MascotScaleSetting.minimum...MascotScaleSetting.maximum,
+                        step: MascotScaleSetting.step
+                    )
+                    .accessibilityLabel(model.text(.mascotSize))
+                    Image(systemName: "plus.magnifyingglass")
+                        .foregroundStyle(.secondary)
+                }
+
+                Text(model.text(.mascotSizeHelp))
+                    .font(.caption2)
+                    .foregroundStyle(.secondary)
+            }
+
             HStack {
                 Text(model.text(.automaticSync))
                 Spacer()

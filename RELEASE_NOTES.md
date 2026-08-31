@@ -5,6 +5,7 @@
 - Added a direct USD cost estimate based on the current month's uncached input, cached input, and output token totals.
 - Added selectable GPT-5.6 Sol, Terra, and Luna pricing scenarios using OpenAI standard short-context text-token rates checked on 2026-08-26.
 - Added a Settings option to switch the desktop character bubble between token usage and estimated cost.
+- Added a persistent 10%–300% character-size slider that resizes the desktop dragon instantly, expands the transparent widget window to avoid clipping, and keeps it aligned to the snapped screen edge.
 - Added Traditional Chinese, Simplified Chinese, and English pricing explanations, limitations, privacy text, and regression coverage.
 
 ## 1.5.0 — Token Monitor open-source candidate

@@ -95,6 +95,17 @@ final class MonitorViewModel: ObservableObject {
         }
     }
 
+    @Published var mascotScale: Double {
+        didSet {
+            let clamped = MascotScaleSetting.clamped(mascotScale)
+            if clamped != mascotScale {
+                mascotScale = clamped
+                return
+            }
+            defaults.set(clamped, forKey: Keys.mascotScale)
+        }
+    }
+
     private enum Keys {
         static let monthlyTokenLimit = "monthlyTokenLimit"
         static let refreshCadence = "refreshCadence"
@@ -102,6 +113,7 @@ final class MonitorViewModel: ObservableObject {
         static let soundEffectsEnabled = "soundEffectsEnabled"
         static let pricingModel = "pricingModel"
         static let widgetBubbleContent = "widgetBubbleContent"
+        static let mascotScale = "mascotScale"
     }
 
     private let defaults: UserDefaults
@@ -135,6 +147,11 @@ final class MonitorViewModel: ObservableObject {
         let savedBubbleContent = defaults.string(forKey: Keys.widgetBubbleContent)
         self.widgetBubbleContent = WidgetBubbleContent(rawValue: savedBubbleContent ?? "")
             ?? .tokenUsage
+
+        let savedMascotScale = defaults.object(forKey: Keys.mascotScale) as? NSNumber
+        self.mascotScale = MascotScaleSetting.clamped(
+            savedMascotScale?.doubleValue ?? MascotScaleSetting.defaultValue
+        )
     }
 
     var usedTokens: Int64 { snapshot.usedTokens }

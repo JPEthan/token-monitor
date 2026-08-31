@@ -18,6 +18,7 @@
 - 位置與左右方向會記憶，下次顯示時自動恢復
 - 透明無邊框視窗跨桌面空間保持於一般 App 上方
 - 人物使用高品質插值與柔化邊緣圖層，縮放時減少鋸齒
+- 設定提供 10%～300% 的「龍娘大小」滑塊；調整會即時套用並自動記憶，放大時透明桌寵視窗會同步擴展以避免裁切
 - 設定可切換繁體中文、簡體中文與 English，桌面氣泡會同步切換
 - 點擊人物或手動刷新時可播放橡皮鴨音效，並可在設定中關閉或試聽
 - 可選 GPT-5.6 Sol、Terra 或 Luna 作為美元估價模型
@@ -109,7 +110,7 @@ chmod +x build-public-release.sh verify-public-release.sh
 ### 資安設計
 
 - Admin API Key 只儲存在 macOS Keychain。
-- UserDefaults 只保存自訂 Token 額度、更新頻率、顯示語言、音效開關、估價模型、人物氣泡顯示模式、桌寵位置與左右鏡像方向。
+- UserDefaults 只保存自訂 Token 額度、更新頻率、顯示語言、音效開關、估價模型、人物氣泡顯示模式、龍娘大小、桌寵位置與左右鏡像方向。
 - 程式只向 `https://api.openai.com/v1/organization/usage/completions` 發出讀取請求。
 - 桌面角色圖片隨 App 一起打包，不會從網路即時下載。
 - 原始碼、設定檔與打包檔不含 API Key。
@@ -166,6 +167,7 @@ Selecting “Refresh and Show” displays an always-on-top, draggable, transpare
 - Position and orientation are remembered and restored the next time the widget appears.
 - The transparent borderless window remains above ordinary apps across desktop Spaces.
 - High-quality interpolation and a softened edge layer reduce visible aliasing while scaling the character.
+- Settings provide a 10%–300% character-size slider; changes appear immediately and are remembered automatically, and the transparent widget window expands to avoid clipping at larger sizes.
 - Settings support Traditional Chinese, Simplified Chinese, and English; the desktop bubble changes language immediately.
 - Clicking the character or refreshing manually can play a synthesized rubber-duck sound, which can be disabled or previewed in Settings.
 - GPT-5.6 Sol, Terra, or Luna can be selected as the pricing scenario.
@@ -257,7 +259,7 @@ chmod +x build-public-release.sh verify-public-release.sh
 ### Security design
 
 - The Admin API Key is stored only in macOS Keychain.
-- UserDefaults stores only the custom token budget, refresh interval, display language, sound preference, pricing model, bubble display mode, desktop-widget position, and mirrored orientation.
+- UserDefaults stores only the custom token budget, refresh interval, display language, sound preference, pricing model, bubble display mode, character size, desktop-widget position, and mirrored orientation.
 - The app sends usage requests only to `https://api.openai.com/v1/organization/usage/completions`.
 - Character artwork is bundled locally and is never fetched dynamically from the network.
 - Source files, configuration files, and release packages do not contain an API key.

@@ -6,6 +6,7 @@ struct DesktopWidgetView: View {
     @ObservedObject var presentation: DesktopWidgetPresentation
     let onRefresh: () -> Void
     let onClose: () -> Void
+    let onScaleChange: (Double) -> Void
 
     @State private var mascotIsBouncing = false
     @State private var controlsVisible = false
@@ -18,29 +19,35 @@ struct DesktopWidgetView: View {
                 .contentShape(Rectangle())
 
             mascot
-                .frame(width: 330, height: 270)
-                .position(x: mascotX, y: 320)
+                .frame(
+                    width: DesktopWidgetLayout.mascotFrameSize.width,
+                    height: DesktopWidgetLayout.mascotFrameSize.height
+                )
+                .position(x: mascotX, y: mascotY)
 
             if model.widgetBubbleVisible {
                 thoughtBubble
-                    .position(x: bubbleX, y: 91)
+                    .position(x: bubbleX, y: 91 + compactBubbleYOffset)
                     .transition(.scale(scale: 0.78, anchor: bubbleAnchor).combined(with: .opacity))
 
                 thoughtDot(size: 18)
-                    .position(x: firstDotX, y: 163)
+                    .position(x: firstDotX, y: 163 + compactBubbleYOffset)
                     .transition(.scale.combined(with: .opacity))
 
                 thoughtDot(size: 11)
-                    .position(x: secondDotX, y: 184)
+                    .position(x: secondDotX, y: 184 + compactBubbleYOffset)
                     .transition(.scale.combined(with: .opacity))
             }
 
             controls
-                .position(x: presentation.isMirrored ? 26 : 344, y: 38)
+                .position(x: controlsX, y: 38)
                 .opacity(controlsVisible ? 1 : 0.3)
         }
-        .frame(width: 370, height: 455)
+        .frame(width: widgetSize.width, height: widgetSize.height)
         .onHover { controlsVisible = $0 }
+        .onChange(of: model.mascotScale) { newScale in
+            onScaleChange(newScale)
+        }
         .animation(.spring(response: 0.34, dampingFraction: 0.78), value: model.widgetBubbleVisible)
         .animation(.easeInOut(duration: 0.18), value: presentation.isMirrored)
     }
@@ -75,8 +82,8 @@ struct DesktopWidgetView: View {
             }
         }
         .scaleEffect(
-            x: presentation.isMirrored ? -1 : 1,
-            y: mascotIsBouncing ? 0.88 : 1,
+            x: presentation.isMirrored ? -mascotScale : mascotScale,
+            y: mascotScale * (mascotIsBouncing ? 0.88 : 1),
             anchor: .bottom
         )
         .shadow(color: Color.black.opacity(0.2), radius: 6, x: 0, y: 4)
@@ -206,10 +213,31 @@ struct DesktopWidgetView: View {
         }
     }
 
-    private var mascotX: CGFloat { presentation.isMirrored ? 165 : 205 }
-    private var bubbleX: CGFloat { presentation.isMirrored ? 238 : 132 }
-    private var firstDotX: CGFloat { presentation.isMirrored ? 246 : 124 }
-    private var secondDotX: CGFloat { presentation.isMirrored ? 220 : 150 }
+    private var mascotScale: CGFloat { CGFloat(model.mascotScale) }
+    private var widgetSize: CGSize { DesktopWidgetLayout.panelSize(for: model.mascotScale) }
+    private var mascotX: CGFloat {
+        let scaledWidth = DesktopWidgetLayout.mascotFrameSize.width * mascotScale
+        return presentation.isMirrored ? scaledWidth / 2 : widgetSize.width - scaledWidth / 2
+    }
+    private var mascotY: CGFloat {
+        widgetSize.height - DesktopWidgetLayout.mascotFrameSize.height / 2
+    }
+    private var bubbleDirection: CGFloat { presentation.isMirrored ? 1 : -1 }
+    private var bubbleX: CGFloat {
+        min(max(mascotX + bubbleDirection * 73, 122), widgetSize.width - 122)
+    }
+    private var firstDotX: CGFloat {
+        min(max(mascotX + bubbleDirection * 81, 9), widgetSize.width - 9)
+    }
+    private var secondDotX: CGFloat {
+        min(max(mascotX + bubbleDirection * 55, 5.5), widgetSize.width - 5.5)
+    }
+    private var compactBubbleYOffset: CGFloat {
+        let scaledMascotTop = widgetSize.height
+            - DesktopWidgetLayout.mascotFrameSize.height * mascotScale
+        return max(scaledMascotTop - 185, 0)
+    }
+    private var controlsX: CGFloat { presentation.isMirrored ? 26 : widgetSize.width - 26 }
     private var bubbleAnchor: UnitPoint { presentation.isMirrored ? .bottomLeading : .bottomTrailing }
 }
 

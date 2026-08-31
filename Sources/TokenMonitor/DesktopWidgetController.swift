@@ -33,7 +33,7 @@ final class DesktopWidgetController: NSObject, NSWindowDelegate {
     }
 
     private func makePanel(model: MonitorViewModel) -> DesktopMascotPanel {
-        let size = NSSize(width: 370, height: 455)
+        let size: NSSize = DesktopWidgetLayout.panelSize(for: model.mascotScale)
         let panel = DesktopMascotPanel(
             contentRect: NSRect(origin: .zero, size: size),
             styleMask: [.borderless, .nonactivatingPanel],
@@ -49,10 +49,14 @@ final class DesktopWidgetController: NSObject, NSWindowDelegate {
             },
             onClose: { [weak self] in
                 self?.hide()
+            },
+            onScaleChange: { [weak self] scale in
+                self?.resizePanel(for: scale)
             }
         )
         let hostingView = NSHostingView(rootView: rootView)
         hostingView.frame = NSRect(origin: .zero, size: size)
+        hostingView.autoresizingMask = [.width, .height]
         hostingView.wantsLayer = true
         hostingView.layer?.backgroundColor = NSColor.clear.cgColor
 
@@ -100,14 +104,77 @@ final class DesktopWidgetController: NSObject, NSWindowDelegate {
             )
         }
 
-        origin.x = min(max(origin.x, visible.minX + 10), visible.maxX - panel.frame.width - 10)
-        origin.y = min(max(origin.y, visible.minY + 10), visible.maxY - panel.frame.height - 10)
+        origin = constrainedOrigin(origin, panelSize: panel.frame.size, visibleFrame: visible)
         panel.setFrameOrigin(origin)
 
         presentation.isMirrored = defaults.object(forKey: PositionKeys.mirrored) == nil
             ? false
             : defaults.bool(forKey: PositionKeys.mirrored)
         hasPositionedPanel = true
+    }
+
+    private func resizePanel(for scale: Double) {
+        guard let panel else { return }
+
+        let newSize: NSSize = DesktopWidgetLayout.panelSize(for: scale)
+        guard
+            abs(panel.frame.width - newSize.width) > 0.5
+                || abs(panel.frame.height - newSize.height) > 0.5
+        else { return }
+
+        let oldFrame = panel.frame
+        var newOrigin = NSPoint(
+            x: presentation.isMirrored ? oldFrame.minX : oldFrame.maxX - newSize.width,
+            y: oldFrame.minY
+        )
+
+        let center = NSPoint(x: oldFrame.midX, y: oldFrame.midY)
+        if let screen = NSScreen.screens.first(where: { $0.frame.contains(center) })
+            ?? panel.screen
+            ?? NSScreen.main
+            ?? NSScreen.screens.first {
+            newOrigin = constrainedOrigin(
+                newOrigin,
+                panelSize: newSize,
+                visibleFrame: screen.visibleFrame
+            )
+        }
+
+        isSnapping = true
+        panel.setFrame(NSRect(origin: newOrigin, size: newSize), display: true, animate: false)
+        isSnapping = false
+
+        UserDefaults.standard.set(newOrigin.x, forKey: PositionKeys.x)
+        UserDefaults.standard.set(newOrigin.y, forKey: PositionKeys.y)
+    }
+
+    private func constrainedOrigin(
+        _ proposedOrigin: NSPoint,
+        panelSize: NSSize,
+        visibleFrame: NSRect
+    ) -> NSPoint {
+        let padding: CGFloat = 10
+        var origin = proposedOrigin
+
+        if panelSize.width <= visibleFrame.width - padding * 2 {
+            origin.x = min(
+                max(origin.x, visibleFrame.minX + padding),
+                visibleFrame.maxX - panelSize.width - padding
+            )
+        } else {
+            origin.x = visibleFrame.minX
+        }
+
+        if panelSize.height <= visibleFrame.height - padding * 2 {
+            origin.y = min(
+                max(origin.y, visibleFrame.minY + padding),
+                visibleFrame.maxY - panelSize.height - padding
+            )
+        } else {
+            origin.y = visibleFrame.minY
+        }
+
+        return origin
     }
 
     func windowDidMove(_ notification: Notification) {
@@ -147,9 +214,10 @@ final class DesktopWidgetController: NSObject, NSWindowDelegate {
             ? visible.minX + padding
             : visible.maxX - panel.frame.width - padding
 
-        destination.y = min(
-            max(destination.y, visible.minY + padding),
-            visible.maxY - panel.frame.height - padding
+        destination = constrainedOrigin(
+            destination,
+            panelSize: panel.frame.size,
+            visibleFrame: visible
         )
 
         let verticalSnapDistance: CGFloat = 72

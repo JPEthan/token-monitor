@@ -72,6 +72,17 @@ CLANG_MODULE_CACHE_PATH="$MODULE_CACHE_DIR" \
 swiftc \
     -sdk "$SDK_PATH" \
     -module-cache-path "$MODULE_CACHE_DIR" \
+    -o "$VERIFY_DIR/MascotScaleVerification" \
+    "$PROJECT_DIR/Sources/TokenMonitor/MascotScaleSetting.swift" \
+    "$PROJECT_DIR/Verification/MascotScaleCheck.swift"
+
+"$VERIFY_DIR/MascotScaleVerification"
+
+SDKROOT="$SDK_PATH" \
+CLANG_MODULE_CACHE_PATH="$MODULE_CACHE_DIR" \
+swiftc \
+    -sdk "$SDK_PATH" \
+    -module-cache-path "$MODULE_CACHE_DIR" \
     -framework AppKit \
     -framework SwiftUI \
     -o "$VERIFY_DIR/MenuBarWindowSizingVerification" \
