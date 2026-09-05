@@ -1,10 +1,11 @@
 import Foundation
 
-/// GPT-5.6 models supported by the monitor's what-if cost estimate.
+/// Models supported by the monitor's what-if cost estimate.
 ///
-/// Rates are OpenAI's standard short-context text-token prices published on
-/// 2026-08-26. They are expressed in US dollars per one million tokens.
+/// Standard short-context text-token rates, verified on 2026-09-06 at
+/// https://developers.openai.com/api/docs/pricing (USD per one million tokens).
 public enum PricingModel: String, CaseIterable, Identifiable, Sendable {
+    case astra = "gpt-6-astra"
     case sol = "gpt-5.6-sol"
     case terra = "gpt-5.6-terra"
     case luna = "gpt-5.6-luna"
@@ -13,33 +14,26 @@ public enum PricingModel: String, CaseIterable, Identifiable, Sendable {
 
     public var displayName: String {
         switch self {
+        case .astra: "GPT-6 Astra"
         case .sol: "GPT-5.6 Sol"
         case .terra: "GPT-5.6 Terra"
         case .luna: "GPT-5.6 Luna"
         }
     }
 
-    public var inputUSDPerMillion: Decimal {
-        switch self {
-        case .sol: 4
-        case .terra: 2
-        case .luna: Decimal(string: "0.20")!
-        }
-    }
+    public var inputUSDPerMillion: Decimal { rates.input }
 
-    public var cachedInputUSDPerMillion: Decimal {
-        switch self {
-        case .sol: Decimal(string: "0.40")!
-        case .terra: Decimal(string: "0.20")!
-        case .luna: Decimal(string: "0.02")!
-        }
-    }
+    public var cachedInputUSDPerMillion: Decimal { rates.cachedInput }
 
-    public var outputUSDPerMillion: Decimal {
+    public var outputUSDPerMillion: Decimal { rates.output }
+
+    // Keep each model's three rates together so future updates stay consistent.
+    private var rates: (input: Decimal, cachedInput: Decimal, output: Decimal) {
         switch self {
-        case .sol: 20
-        case .terra: 12
-        case .luna: Decimal(string: "1.20")!
+        case .astra: (10, 1, 50)
+        case .sol: (4, Decimal(4) / 10, 20)
+        case .terra: (2, Decimal(2) / 10, 12)
+        case .luna: (Decimal(2) / 10, Decimal(2) / 100, Decimal(12) / 10)
         }
     }
 }
@@ -66,13 +60,15 @@ public struct TokenCostEstimate: Equatable, Sendable {
 }
 
 public enum TokenCostEstimator {
-    public static let pricingReferenceDate = "2026-08-26"
+    public static let pricingReferenceDate = "2026-09-06"
 
     /// Estimates standard short-context text-token cost for one selected model.
     ///
     /// The Usage API reports cached input as a subset of `input_tokens`, so the
     /// cached portion is removed before applying the full input rate. Cached
     /// input is clamped to total input to defend against malformed aggregates.
+    /// Monthly totals cannot identify per-request long-context pricing or cache
+    /// writes. Those surcharges and non-standard service tiers are not included.
     public static func estimate(
         inputTokens: Int64,
         cachedInputTokens: Int64,

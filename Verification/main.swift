@@ -60,7 +60,13 @@ do {
         try expect(totals.totalUsedTokens == 1_500, "總使用量應為 input + output")
     }
 
-    try run("Sol、Terra、Luna 美元估價會分開計算快取輸入") {
+    try run("GPT-6 Astra、Sol、Terra、Luna 美元估價會分開計算快取輸入") {
+        let astra = TokenCostEstimator.estimate(
+            inputTokens: 1_000_000,
+            cachedInputTokens: 200_000,
+            outputTokens: 100_000,
+            model: .astra
+        )
         let sol = TokenCostEstimator.estimate(
             inputTokens: 1_000_000,
             cachedInputTokens: 200_000,
@@ -80,9 +86,34 @@ do {
             model: .luna
         )
 
+        try expect(astra.uncachedInputUSD == 8, "Astra 非快取輸入應為 US$8.00")
+        try expect(astra.cachedInputUSD == Decimal(string: "0.20"), "Astra 快取輸入應為 US$0.20")
+        try expect(astra.outputUSD == 5, "Astra 輸出應為 US$5.00")
+        try expect(astra.totalUSD == Decimal(string: "13.20"), "Astra 估價應為 US$13.20")
         try expect(sol.totalUSD == Decimal(string: "5.28"), "Sol 估價應為 US$5.28")
         try expect(terra.totalUSD == Decimal(string: "2.84"), "Terra 估價應為 US$2.84")
         try expect(luna.totalUSD == Decimal(string: "0.284"), "Luna 估價應為 US$0.284")
+    }
+
+    try run("GPT-6 Astra 全快取輸入與異常用量計費正確") {
+        let cachedOnly = TokenCostEstimator.estimate(
+            inputTokens: 1_000_000,
+            cachedInputTokens: 1_000_000,
+            outputTokens: 0,
+            model: .astra
+        )
+        try expect(cachedOnly.uncachedInputUSD == 0, "全快取輸入不應另計普通輸入費用")
+        try expect(cachedOnly.totalUSD == 1, "Astra 一百萬全快取輸入應為 US$1.00")
+
+        let invalid = TokenCostEstimator.estimate(
+            inputTokens: -100,
+            cachedInputTokens: 500,
+            outputTokens: -20,
+            model: .astra
+        )
+        try expect(invalid.totalUSD == 0, "異常用量不應產生負費用或超額快取費用")
+        try expect(PricingModel(rawValue: "gpt-6-astra") == .astra, "已儲存的 Astra 選項應可還原")
+        try expect(PricingModel.allCases.contains(.astra), "設定選單應包含 Astra")
     }
 
     try run("剩餘 Token 與超額狀態正確") {

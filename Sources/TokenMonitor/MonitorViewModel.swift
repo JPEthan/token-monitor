@@ -315,7 +315,13 @@ final class MonitorViewModel: ObservableObject {
     }
 
     func text(_ key: L10nKey) -> String {
-        L10n.text(key, language: language)
+        if case .pricingDisclaimer = key {
+            return L10n.pricingDisclaimer(
+                language: language,
+                referenceDate: TokenCostEstimator.pricingReferenceDate
+            )
+        }
+        return L10n.text(key, language: language)
     }
 
     func playDuckSound(force: Bool = false) {

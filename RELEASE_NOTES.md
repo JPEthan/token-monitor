@@ -1,5 +1,13 @@
 # Release Notes
 
+## Unreleased — GPT-6 Astra pricing
+
+- Added GPT-6 Astra to the macOS pricing-model picker at US$10 input, US$1 cached input, and US$50 output per million tokens, verified against [official pricing](https://developers.openai.com/api/docs/pricing) on 2026-09-06.
+- Kept existing model selections and the Terra default; selecting Astra updates the main estimate and cost-mode character bubble and is saved automatically.
+- Consolidated each model's three rates and supplied all three UI languages with one shared pricing-reference date.
+- Added Astra mixed-usage, fully cached, and invalid-counter regression checks, preserving the existing GPT-5.6 estimates.
+- Documented that monthly aggregate estimates exclude per-request long-context and cache-write surcharges, along with non-standard processing and tool charges.
+
 ## 1.6.0-beta.1 — USD cost estimate pre-release
 
 - Added a direct USD cost estimate based on the current month's uncached input, cached input, and output token totals.

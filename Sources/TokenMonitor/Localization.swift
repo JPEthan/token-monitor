@@ -85,6 +85,10 @@ enum L10nKey: CaseIterable {
 }
 
 enum L10n {
+    static func pricingDisclaimer(language: AppLanguage, referenceDate: String) -> String {
+        String(format: text(.pricingDisclaimer, language: language), referenceDate)
+    }
+
     static func text(_ key: L10nKey, language: AppLanguage) -> String {
         switch language {
         case .traditionalChinese:
@@ -119,7 +123,7 @@ enum L10n {
         case .bubbleEstimatedCost: "預估花銷（美元）"
         case .mascotSize: "龍娘大小"
         case .mascotSizeHelp: "拖動滑塊可即時調整桌面人物大小；設定會自動保存。"
-        case .pricingDisclaimer: "依所選模型的 OpenAI API 標準短上下文文字價格估算（價格基準：2026-08-26）。假設本月全部 Token 都使用此模型；不包含長上下文加價、Batch／Flex／Priority、區域處理、Cache Write、工具呼叫或其他費用。價格可能變動，請以 OpenAI 正式帳單為準。"
+        case .pricingDisclaimer: "依所選模型的 OpenAI API 標準短上下文文字價格估算（價格基準：%@）。假設本月全部 Token 都使用此模型；月度彙總無法判定個別請求的長上下文加價或快取寫入費用。估算不包含這些加價、Batch／Flex／Fast（Priority）、區域處理、工具呼叫或其他費用。價格可能變動，請以 OpenAI 正式帳單為準。"
         case .updated: "更新"
         case .syncing: "同步中…"
         case .refreshAndShow: "刷新並顯示"
@@ -189,7 +193,7 @@ enum L10n {
         case .bubbleEstimatedCost: "预估花销（美元）"
         case .mascotSize: "龙娘大小"
         case .mascotSizeHelp: "拖动滑块可实时调整桌面人物大小；设置会自动保存。"
-        case .pricingDisclaimer: "按所选模型的 OpenAI API 标准短上下文文字价格估算（价格基准：2026-08-26）。假设本月全部 Token 都使用该模型；不包含长上下文加价、Batch／Flex／Priority、区域处理、Cache Write、工具调用或其他费用。价格可能变动，请以 OpenAI 正式账单为准。"
+        case .pricingDisclaimer: "按所选模型的 OpenAI API 标准短上下文文字价格估算（价格基准：%@）。假设本月全部 Token 都使用该模型；月度汇总无法判定个别请求的长上下文加价或缓存写入费用。估算不包含这些加价、Batch／Flex／Fast（Priority）、区域处理、工具调用或其他费用。价格可能变动，请以 OpenAI 正式账单为准。"
         case .updated: "更新"
         case .syncing: "同步中…"
         case .refreshAndShow: "刷新并显示"
@@ -259,7 +263,7 @@ enum L10n {
         case .bubbleEstimatedCost: "Estimated cost (USD)"
         case .mascotSize: "Character size"
         case .mascotSizeHelp: "Drag the slider to resize the desktop character instantly. Your setting is saved automatically."
-        case .pricingDisclaimer: "Estimated from the selected model's standard short-context OpenAI API text-token prices (pricing reference: 2026-08-26). It assumes all monthly tokens used that model and excludes long-context uplifts, Batch/Flex/Priority, regional processing, cache writes, tool calls, and other charges. Prices may change; the OpenAI invoice is authoritative."
+        case .pricingDisclaimer: "Estimated from the selected model's standard short-context OpenAI API text-token prices (pricing reference: %@). It assumes all monthly tokens used that model. Monthly totals cannot identify per-request long-context or cache-write surcharges. These surcharges, Batch/Flex/Fast (Priority), regional processing, tool calls, and other charges are excluded. Prices may change; the OpenAI invoice is authoritative."
         case .updated: "Updated"
         case .syncing: "Syncing…"
         case .refreshAndShow: "Refresh & Show"

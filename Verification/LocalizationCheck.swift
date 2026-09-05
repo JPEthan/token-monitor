@@ -8,6 +8,11 @@ enum LocalizationCheck {
             for key in L10nKey.allCases {
                 precondition(!L10n.text(key, language: language).isEmpty)
             }
+            for referenceDate in ["2026-09-06", "2030-01-01"] {
+                let explanation = L10n.pricingDisclaimer(language: language, referenceDate: referenceDate)
+                precondition(explanation.contains(referenceDate))
+                precondition(!explanation.contains("%@"))
+            }
         }
 
         precondition(L10n.text(.appTitle, language: .traditionalChinese) == "Token Monitor")
