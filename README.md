@@ -6,7 +6,7 @@
 
 > **非官方第三方工具：** 本專案不是 OpenAI 官方產品，也未獲 OpenAI 贊助、認可、背書或合作。顯示的「剩餘 Token」與「預估花銷」都是依 API 彙總用量計算的輔助估算，不是官方帳單、硬性限額、ChatGPT 訊息額度或 context window。使用前請閱讀 [免責聲明](DISCLAIMER.md) 與 [隱私說明](PRIVACY.md)。
 
-這是一個常駐 macOS 選單列的 OpenAI API Token 用量監視器。它會讀取 OpenAI 官方 Organization Usage API，顯示本月的輸入、輸出、快取輸入、請求次數、依照自訂月度 Token 額度計算的剩餘量，以及按 GPT-6 Astra 或 GPT-5.6 Sol／Terra／Luna 標準文字單價推算的美元花銷。
+這是一個常駐 macOS 選單列的 OpenAI API Token 用量監視器。它會讀取 OpenAI 官方 Organization Usage API，顯示本月的輸入、輸出、快取輸入、請求次數、依照自訂月度 Token 額度計算的剩餘量，以及按 GPT-6.1 Sol、GPT-6 Astra／Sol／Luna 或 GPT-5.6 Sol／Terra／Luna 標準文字單價推算的美元花銷。
 
 按下「刷新並顯示」後，程式會在桌面右下角顯示一個永遠置頂、可拖曳的透明角色小工具。泡泡可在設定中選擇顯示 Token 使用量或美元預估花銷；角色使用使用者提供的白紫色 AI 生成龍族 Q 版透明圖。小工具右上角可重新刷新或隱藏。
 
@@ -21,7 +21,7 @@
 - 設定提供 10%～300% 的「龍娘大小」滑塊；調整會即時套用並自動記憶，放大時透明桌寵視窗會同步擴展以避免裁切
 - 設定可切換繁體中文、簡體中文與 English，桌面氣泡會同步切換
 - 點擊人物或手動刷新時可播放橡皮鴨音效，並可在設定中關閉或試聽
-- 可選 GPT-6 Astra、GPT-5.6 Sol、Terra 或 Luna 作為美元估價模型
+- 可選 GPT-6.1 Sol、GPT-6 Astra／Sol／Luna、GPT-5.6 Sol／Terra／Luna 共七種美元估價模型
 - 主面板直接顯示本月預估花銷，人物氣泡可切換顯示 Token 或預估花銷
 - 關閉設定後會同步縮回實際選單視窗高度，不殘留上下透明區域
 - App 使用目前的白紫色 Q 版龍娘人物作為 macOS 徽標
@@ -40,11 +40,14 @@ OpenAI Usage API 只提供已使用量，沒有官方的 `remaining_tokens` 欄�
 
 ### 預估花銷如何計算
 
-程式使用下列 OpenAI API 標準短上下文文字價格（2026-09-06 查核，每 100 萬 Token、美元）：
+程式使用下列 OpenAI API 標準短上下文文字價格（2026-10-05 查核，每 100 萬 Token、美元）：
 
 | 模型 | Input | Cached input | Output |
 |---|---:|---:|---:|
 | GPT-6 Astra | US$10.00 | US$1.00 | US$50.00 |
+| GPT-6.1 Sol | US$2.00 | US$0.10 | US$10.00 |
+| GPT-6 Sol | US$2.00 | US$0.20 | US$10.00 |
+| GPT-6 Luna | US$0.10 | US$0.01 | US$0.50 |
 | GPT-5.6 Sol | US$4.00 | US$0.40 | US$20.00 |
 | GPT-5.6 Terra | US$2.00 | US$0.20 | US$12.00 |
 | GPT-5.6 Luna | US$0.20 | US$0.02 | US$1.20 |
@@ -57,7 +60,7 @@ OpenAI Usage API 只提供已使用量，沒有官方的 `remaining_tokens` 欄�
 
 `input_cached_tokens` 是 `input_tokens` 的一部分，程式會先從總輸入中拆出快取部分，不會同時按完整 Input 價格和 Cached input 價格重複計費。估算假設本月全部 Token 都使用設定中選擇的同一模型，不包含單次請求超過 272K Input 的長上下文加價、Batch／Flex／Fast（Priority）、區域處理、Cache Write、工具呼叫或其他費用。OpenAI 價格可能變動，正式金額必須以 OpenAI 帳單為準；這也不是 ChatGPT 訂閱費用。
 
-使用 GPT-6：在「設定 → 估價模型」選擇 **GPT-6 Astra**，主面板與花銷模式的氣泡會立即重算，選擇會自動保存。原有模型選擇及預設 Terra 保持不變。例如：本月輸入 1,000,000 Token（其中 200,000 為快取）、輸出 100,000 Token，Astra 標準估價為 **US$13.20**。
+在「設定 → 估價模型」選擇所需模型，主面板與花銷模式的氣泡會立即重算，選擇會自動保存。原有模型選擇及預設 GPT-5.6 Terra 保持不變。例如：本月輸入 1,000,000 Token（其中 200,000 為快取）、輸出 100,000 Token，GPT-6 Sol 標準估價為 **US$2.64**、GPT-6 Luna 為 **US$0.132**、GPT-6.1 Sol 為 **US$2.62**（顯示時可能四捨五入）。GPT-6.1 Sol 的快取輸入價格是 GPT-6 Sol 的一半，因此兩者是獨立選項，不會替換原有 GPT-5.6 Sol。
 
 GPT-6 Astra 的長上下文標準價格為輸入 US$20、快取輸入 US$2、輸出 US$75／百萬 Token；快取寫入的短／長上下文價格分別為 US$12.50／US$25。此 App 目前的月度彙總資料無法拆分這些費用，所以不會以月用量超過 272K 作為加價依據。詳見 [GPT-6 Astra 官方說明](https://developers.openai.com/api/docs/models/gpt-6-astra) 與 [官方定價](https://developers.openai.com/api/docs/pricing)。
 
@@ -73,6 +76,9 @@ GPT-6 Astra 的長上下文標準價格為輸入 US$20、快取輸入 US$2、輸
 - [Organization Usage 回應欄位](https://developers.openai.com/api/reference/resources/admin/subresources/organization/subresources/usage)
 - [Admin API Keys](https://developers.openai.com/api/reference/resources/admin/subresources/organization/subresources/admin_api_keys)
 - [GPT-6 Astra 模型與標準價格](https://developers.openai.com/api/docs/models/gpt-6-astra)
+- [GPT-6 Sol 模型與標準價格](https://developers.openai.com/api/docs/models/gpt-6-sol)
+- [GPT-6 Luna 模型與標準價格](https://developers.openai.com/api/docs/models/gpt-6-luna)
+- [GPT-6.1 Sol 模型與標準價格](https://developers.openai.com/api/docs/models/gpt-6.1-sol)
 - [OpenAI API 定價](https://developers.openai.com/api/docs/pricing)
 
 ### 公開範圍
@@ -161,7 +167,7 @@ Admin API Key 權限很高，請勿將金鑰貼進截圖、提交到 Git，或�
 
 > **Unofficial third-party utility:** This project is not an official OpenAI product and is not sponsored, approved, endorsed, or supported by OpenAI. The displayed “remaining tokens” and “estimated cost” values are informational calculations based on aggregate API usage. They are not an official bill, enforced limit, ChatGPT message allowance, or context-window reading. Read the [Disclaimer](DISCLAIMER.md) and [Privacy Notice](PRIVACY.md) before use.
 
-Token Monitor is a macOS menu-bar utility for monitoring OpenAI API token usage. It reads the official OpenAI Organization Usage API and displays the current month's input tokens, output tokens, cached input tokens, request count, remaining amount under a user-defined monthly token budget, and a USD estimate based on GPT-6 Astra or GPT-5.6 Sol, Terra, or Luna standard text-token prices.
+Token Monitor is a macOS menu-bar utility for monitoring OpenAI API token usage. It reads the official OpenAI Organization Usage API and displays the current month's input tokens, output tokens, cached input tokens, request count, remaining amount under a user-defined monthly token budget, and a USD estimate based on GPT-6.1 Sol, GPT-6 Astra/Sol/Luna, or GPT-5.6 Sol/Terra/Luna standard text-token prices.
 
 Selecting “Refresh and Show” displays an always-on-top, draggable, transparent desktop character widget near the lower-right corner of the screen. Its bubble can show token usage or the USD estimate, as selected in Settings. The character uses the user-supplied white-and-purple AI-generated chibi dragon artwork.
 
@@ -176,7 +182,7 @@ Selecting “Refresh and Show” displays an always-on-top, draggable, transpare
 - Settings provide a 10%–300% character-size slider; changes appear immediately and are remembered automatically, and the transparent widget window expands to avoid clipping at larger sizes.
 - Settings support Traditional Chinese, Simplified Chinese, and English; the desktop bubble changes language immediately.
 - Clicking the character or refreshing manually can play a synthesized rubber-duck sound, which can be disabled or previewed in Settings.
-- GPT-6 Astra, GPT-5.6 Sol, Terra, or Luna can be selected as the pricing scenario.
+- Seven pricing scenarios are available: GPT-6.1 Sol, GPT-6 Astra/Sol/Luna, and GPT-5.6 Sol/Terra/Luna.
 - The main panel shows the estimated monthly cost directly, while the character bubble can switch between tokens and estimated cost.
 - Closing Settings restores the actual compact menu-window height without leaving transparent space above or below the UI.
 - The current white-and-purple chibi dragon artwork is also used as the macOS app icon.
@@ -195,11 +201,14 @@ This value is not the ChatGPT Plus/Pro message allowance and is not the remainin
 
 ### How estimated cost is calculated
 
-The app uses the following OpenAI API standard short-context text-token prices, checked on 2026-09-06 and expressed in USD per one million tokens:
+The app uses the following OpenAI API standard short-context text-token prices, checked on 2026-10-05 and expressed in USD per one million tokens:
 
 | Model | Input | Cached input | Output |
 |---|---:|---:|---:|
 | GPT-6 Astra | US$10.00 | US$1.00 | US$50.00 |
+| GPT-6.1 Sol | US$2.00 | US$0.10 | US$10.00 |
+| GPT-6 Sol | US$2.00 | US$0.20 | US$10.00 |
+| GPT-6 Luna | US$0.10 | US$0.01 | US$0.50 |
 | GPT-5.6 Sol | US$4.00 | US$0.40 | US$20.00 |
 | GPT-5.6 Terra | US$2.00 | US$0.20 | US$12.00 |
 | GPT-5.6 Luna | US$0.20 | US$0.02 | US$1.20 |
@@ -212,7 +221,7 @@ Estimated cost = uncached input × input rate
 
 Because `input_cached_tokens` is a subset of `input_tokens`, the cached portion is split out before applying prices and is not charged at both rates. The estimate assumes all monthly tokens used the single model selected in Settings. It excludes the long-context uplift above 272K input tokens in an individual request, Batch/Flex/Fast (Priority) processing, regional processing, cache writes, tool calls, and other charges. OpenAI pricing may change, so the OpenAI invoice is authoritative. This is not a ChatGPT subscription charge.
 
-To use GPT-6, select **GPT-6 Astra** in **Settings → Pricing model**. The main panel and cost-mode bubble recalculate immediately, and the selection is saved automatically. Existing selections and the Terra default are preserved. For example, 1,000,000 monthly input tokens (including 200,000 cached tokens) and 100,000 output tokens produce an Astra standard estimate of **US$13.20**.
+Select a model in **Settings → Pricing model**. The main panel and cost-mode bubble recalculate immediately, and the selection is saved automatically. Existing selections and the GPT-5.6 Terra default are preserved. For example, 1,000,000 monthly input tokens (including 200,000 cached tokens) and 100,000 output tokens produce standard estimates of **US$2.64** for GPT-6 Sol, **US$0.132** for GPT-6 Luna, and **US$2.62** for GPT-6.1 Sol (the displayed amount may be rounded). GPT-6.1 Sol's cached-input rate is half GPT-6 Sol's, so they are separate choices and neither replaces the existing GPT-5.6 Sol option.
 
 GPT-6 Astra's standard long-context rates are US$20 input, US$2 cached input, and US$75 output per million tokens; short/long-context cache writes cost US$12.50/US$25. The app's current monthly aggregates cannot separate these charges, so crossing 272K monthly tokens does not trigger a surcharge. See the [GPT-6 Astra model documentation](https://developers.openai.com/api/docs/models/gpt-6-astra) and [official pricing](https://developers.openai.com/api/docs/pricing).
 
@@ -228,6 +237,9 @@ Official references:
 - [Organization Usage response fields](https://developers.openai.com/api/reference/resources/admin/subresources/organization/subresources/usage)
 - [Admin API Keys](https://developers.openai.com/api/reference/resources/admin/subresources/organization/subresources/admin_api_keys)
 - [GPT-6 Astra model and standard pricing](https://developers.openai.com/api/docs/models/gpt-6-astra)
+- [GPT-6 Sol model and standard pricing](https://developers.openai.com/api/docs/models/gpt-6-sol)
+- [GPT-6 Luna model and standard pricing](https://developers.openai.com/api/docs/models/gpt-6-luna)
+- [GPT-6.1 Sol model and standard pricing](https://developers.openai.com/api/docs/models/gpt-6.1-sol)
 - [OpenAI API pricing](https://developers.openai.com/api/docs/pricing)
 
 ### Publication scope

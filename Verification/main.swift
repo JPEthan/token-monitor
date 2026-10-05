@@ -60,7 +60,7 @@ do {
         try expect(totals.totalUsedTokens == 1_500, "總使用量應為 input + output")
     }
 
-    try run("GPT-6 Astra、Sol、Terra、Luna 美元估價會分開計算快取輸入") {
+    try run("GPT-6 Astra 與 GPT-5.6 Sol、Terra、Luna 既有估價保持不變") {
         let astra = TokenCostEstimator.estimate(
             inputTokens: 1_000_000,
             cachedInputTokens: 200_000,
@@ -93,6 +93,53 @@ do {
         try expect(sol.totalUSD == Decimal(string: "5.28"), "Sol 估價應為 US$5.28")
         try expect(terra.totalUSD == Decimal(string: "2.84"), "Terra 估價應為 US$2.84")
         try expect(luna.totalUSD == Decimal(string: "0.284"), "Luna 估價應為 US$0.284")
+    }
+
+    try run("GPT-6 Sol、GPT-6 Luna、GPT-6.1 Sol 混合及全快取用量計費正確") {
+        let cases: [(model: PricingModel, input: String, cached: String, output: String, total: String)] = [
+            (.sol6, "2", "0.20", "10", "2.64"),
+            (.luna6, "0.10", "0.01", "0.50", "0.132"),
+            (.sol61, "2", "0.10", "10", "2.62"),
+        ]
+        for item in cases {
+            try expect(item.model.inputUSDPerMillion == Decimal(string: item.input), "\(item.model) 輸入單價錯誤")
+            try expect(item.model.cachedInputUSDPerMillion == Decimal(string: item.cached), "\(item.model) 快取單價錯誤")
+            try expect(item.model.outputUSDPerMillion == Decimal(string: item.output), "\(item.model) 輸出單價錯誤")
+            let mixed = TokenCostEstimator.estimate(
+                inputTokens: 1_000_000, cachedInputTokens: 200_000,
+                outputTokens: 100_000, model: item.model
+            )
+            try expect(mixed.totalUSD == Decimal(string: item.total), "\(item.model) 混合用量估價錯誤")
+            let cachedOnly = TokenCostEstimator.estimate(
+                inputTokens: 1_000_000, cachedInputTokens: 1_000_000,
+                outputTokens: 0, model: item.model
+            )
+            try expect(cachedOnly.uncachedInputUSD == 0, "全快取不應另計普通輸入費用")
+            try expect(cachedOnly.totalUSD == Decimal(string: item.cached), "\(item.model) 全快取估價錯誤")
+            let invalid = TokenCostEstimator.estimate(
+                inputTokens: -100, cachedInputTokens: 500, outputTokens: -20, model: item.model
+            )
+            try expect(invalid.totalUSD == 0, "異常用量不應產生費用")
+        }
+    }
+
+    try run("七個模型選項可還原，GPT-5.6、GPT-6、GPT-6.1 不會混淆") {
+        let cases: [(id: String, model: PricingModel, name: String)] = [
+            ("gpt-6-astra", .astra, "GPT-6 Astra"),
+            ("gpt-6.1-sol", .sol61, "GPT-6.1 Sol"),
+            ("gpt-6-sol", .sol6, "GPT-6 Sol"),
+            ("gpt-6-luna", .luna6, "GPT-6 Luna"),
+            ("gpt-5.6-sol", .sol, "GPT-5.6 Sol"),
+            ("gpt-5.6-terra", .terra, "GPT-5.6 Terra"),
+            ("gpt-5.6-luna", .luna, "GPT-5.6 Luna"),
+        ]
+        try expect(PricingModel.allCases.count == cases.count, "選單應有七個模型")
+        for item in cases {
+            try expect(PricingModel(rawValue: item.id) == item.model, "\(item.id) 無法還原")
+            try expect(item.model.rawValue == item.id, "\(item.id) 儲存值錯誤")
+            try expect(item.model.displayName == item.name, "\(item.id) 顯示名稱錯誤")
+            try expect(PricingModel.allCases.contains(item.model), "選單缺少 \(item.id)")
+        }
     }
 
     try run("GPT-6 Astra 全快取輸入與異常用量計費正確") {

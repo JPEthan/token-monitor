@@ -2,10 +2,14 @@ import Foundation
 
 /// Models supported by the monitor's what-if cost estimate.
 ///
-/// Standard short-context text-token rates, verified on 2026-09-06 at
-/// https://developers.openai.com/api/docs/pricing (USD per one million tokens).
+/// Standard short-context text-token rates, verified on 2026-10-05 at
+/// https://developers.openai.com/api/docs/pricing and the individual model pages
+/// (USD per one million tokens).
 public enum PricingModel: String, CaseIterable, Identifiable, Sendable {
     case astra = "gpt-6-astra"
+    case sol61 = "gpt-6.1-sol"
+    case sol6 = "gpt-6-sol"
+    case luna6 = "gpt-6-luna"
     case sol = "gpt-5.6-sol"
     case terra = "gpt-5.6-terra"
     case luna = "gpt-5.6-luna"
@@ -15,6 +19,9 @@ public enum PricingModel: String, CaseIterable, Identifiable, Sendable {
     public var displayName: String {
         switch self {
         case .astra: "GPT-6 Astra"
+        case .sol61: "GPT-6.1 Sol"
+        case .sol6: "GPT-6 Sol"
+        case .luna6: "GPT-6 Luna"
         case .sol: "GPT-5.6 Sol"
         case .terra: "GPT-5.6 Terra"
         case .luna: "GPT-5.6 Luna"
@@ -31,6 +38,9 @@ public enum PricingModel: String, CaseIterable, Identifiable, Sendable {
     private var rates: (input: Decimal, cachedInput: Decimal, output: Decimal) {
         switch self {
         case .astra: (10, 1, 50)
+        case .sol61: (2, Decimal(1) / 10, 10)
+        case .sol6: (2, Decimal(2) / 10, 10)
+        case .luna6: (Decimal(1) / 10, Decimal(1) / 100, Decimal(5) / 10)
         case .sol: (4, Decimal(4) / 10, 20)
         case .terra: (2, Decimal(2) / 10, 12)
         case .luna: (Decimal(2) / 10, Decimal(2) / 100, Decimal(12) / 10)
@@ -60,7 +70,7 @@ public struct TokenCostEstimate: Equatable, Sendable {
 }
 
 public enum TokenCostEstimator {
-    public static let pricingReferenceDate = "2026-09-06"
+    public static let pricingReferenceDate = "2026-10-05"
 
     /// Estimates standard short-context text-token cost for one selected model.
     ///

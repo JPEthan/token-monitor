@@ -1,6 +1,10 @@
 # Release Notes
 
-## Unreleased — GPT-6 Astra pricing
+## Unreleased — GPT-6 and GPT-6.1 pricing
+
+- Added separate macOS pricing choices for [GPT-6 Sol](https://developers.openai.com/api/docs/models/gpt-6-sol), [GPT-6 Luna](https://developers.openai.com/api/docs/models/gpt-6-luna), and [GPT-6.1 Sol](https://developers.openai.com/api/docs/models/gpt-6.1-sol), verified on 2026-10-05. Standard short-context input/cached-input/output prices per million tokens are US$2/0.20/10, US$0.10/0.01/0.50, and US$2/0.10/10 respectively.
+- Preserved all existing model IDs and the GPT-5.6 Terra default; added mixed-usage, fully cached, and saved-selection regression checks for the new choices.
+- Updated both README languages and the shared pricing-reference date. Estimates retain the existing single-model monthly-aggregate scope, not invoice reconciliation.
 
 - Added GPT-6 Astra to the macOS pricing-model picker at US$10 input, US$1 cached input, and US$50 output per million tokens, verified against [official pricing](https://developers.openai.com/api/docs/pricing) on 2026-09-06.
 - Kept existing model selections and the Terra default; selecting Astra updates the main estimate and cost-mode character bubble and is saved automatically.
