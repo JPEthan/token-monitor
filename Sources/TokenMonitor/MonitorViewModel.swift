@@ -142,7 +142,9 @@ final class MonitorViewModel: ObservableObject {
             : defaults.bool(forKey: Keys.soundEffectsEnabled)
 
         let savedPricingModel = defaults.string(forKey: Keys.pricingModel)
-        self.pricingModel = PricingModel(rawValue: savedPricingModel ?? "") ?? .terra
+        let restoredPricingModel = PricingModel.restoredSelection(savedPricingModel)
+        self.pricingModel = restoredPricingModel
+        defaults.set(restoredPricingModel.rawValue, forKey: Keys.pricingModel)
 
         let savedBubbleContent = defaults.string(forKey: Keys.widgetBubbleContent)
         self.widgetBubbleContent = WidgetBubbleContent(rawValue: savedBubbleContent ?? "")

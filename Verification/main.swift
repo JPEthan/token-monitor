@@ -60,39 +60,18 @@ do {
         try expect(totals.totalUsedTokens == 1_500, "總使用量應為 input + output")
     }
 
-    try run("GPT-6 Astra 與 GPT-5.6 Sol、Terra、Luna 既有估價保持不變") {
+    try run("GPT-6 Astra 既有估價保持不變") {
         let astra = TokenCostEstimator.estimate(
             inputTokens: 1_000_000,
             cachedInputTokens: 200_000,
             outputTokens: 100_000,
             model: .astra
         )
-        let sol = TokenCostEstimator.estimate(
-            inputTokens: 1_000_000,
-            cachedInputTokens: 200_000,
-            outputTokens: 100_000,
-            model: .sol
-        )
-        let terra = TokenCostEstimator.estimate(
-            inputTokens: 1_000_000,
-            cachedInputTokens: 200_000,
-            outputTokens: 100_000,
-            model: .terra
-        )
-        let luna = TokenCostEstimator.estimate(
-            inputTokens: 1_000_000,
-            cachedInputTokens: 200_000,
-            outputTokens: 100_000,
-            model: .luna
-        )
 
         try expect(astra.uncachedInputUSD == 8, "Astra 非快取輸入應為 US$8.00")
         try expect(astra.cachedInputUSD == Decimal(string: "0.20"), "Astra 快取輸入應為 US$0.20")
         try expect(astra.outputUSD == 5, "Astra 輸出應為 US$5.00")
         try expect(astra.totalUSD == Decimal(string: "13.20"), "Astra 估價應為 US$13.20")
-        try expect(sol.totalUSD == Decimal(string: "5.28"), "Sol 估價應為 US$5.28")
-        try expect(terra.totalUSD == Decimal(string: "2.84"), "Terra 估價應為 US$2.84")
-        try expect(luna.totalUSD == Decimal(string: "0.284"), "Luna 估價應為 US$0.284")
     }
 
     try run("GPT-6 Sol、GPT-6 Luna、GPT-6.1 Sol 混合及全快取用量計費正確") {
@@ -123,22 +102,27 @@ do {
         }
     }
 
-    try run("七個模型選項可還原，GPT-5.6、GPT-6、GPT-6.1 不會混淆") {
+    try run("僅保留四個 GPT-6、GPT-6.1 模型，既有選項可還原") {
         let cases: [(id: String, model: PricingModel, name: String)] = [
             ("gpt-6-astra", .astra, "GPT-6 Astra"),
             ("gpt-6.1-sol", .sol61, "GPT-6.1 Sol"),
             ("gpt-6-sol", .sol6, "GPT-6 Sol"),
             ("gpt-6-luna", .luna6, "GPT-6 Luna"),
-            ("gpt-5.6-sol", .sol, "GPT-5.6 Sol"),
-            ("gpt-5.6-terra", .terra, "GPT-5.6 Terra"),
-            ("gpt-5.6-luna", .luna, "GPT-5.6 Luna"),
         ]
-        try expect(PricingModel.allCases.count == cases.count, "選單應有七個模型")
+        try expect(PricingModel.allCases.count == cases.count, "選單應有四個模型")
         for item in cases {
             try expect(PricingModel(rawValue: item.id) == item.model, "\(item.id) 無法還原")
             try expect(item.model.rawValue == item.id, "\(item.id) 儲存值錯誤")
             try expect(item.model.displayName == item.name, "\(item.id) 顯示名稱錯誤")
             try expect(PricingModel.allCases.contains(item.model), "選單缺少 \(item.id)")
+            try expect(PricingModel.restoredSelection(item.id) == item.model, "已保存選項應保持不變")
+        }
+    }
+
+    try run("舊版 GPT-5.6、未知及未設定模型回退至 GPT-6.1 Sol") {
+        for id: String? in [nil, "", "unknown", "gpt-5.6-sol", "gpt-5.6-terra", "gpt-5.6-luna"] {
+            try expect(PricingModel.restoredSelection(id) == .sol61, "舊選項應遷移至 Sol 6.1")
+            try expect(PricingModel(rawValue: id ?? "") == nil, "不應保留舊版計費模型")
         }
     }
 

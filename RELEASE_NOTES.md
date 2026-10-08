@@ -2,6 +2,11 @@
 
 ## Unreleased — GPT-6 and GPT-6.1 pricing
 
+- Removed GPT-5.6 Sol, Terra, and Luna pricing on 2026-10-08. The macOS picker now contains only GPT-6 Astra, GPT-6 Sol, GPT-6 Luna, and GPT-6.1 Sol; the retained rates are unchanged.
+- Changed the default to GPT-6.1 Sol. At startup, retired or invalid saved model IDs migrate to this default and are persisted; supported saved choices remain unchanged.
+
+### Earlier additions
+
 - Added separate macOS pricing choices for [GPT-6 Sol](https://developers.openai.com/api/docs/models/gpt-6-sol), [GPT-6 Luna](https://developers.openai.com/api/docs/models/gpt-6-luna), and [GPT-6.1 Sol](https://developers.openai.com/api/docs/models/gpt-6.1-sol), verified on 2026-10-05. Standard short-context input/cached-input/output prices per million tokens are US$2/0.20/10, US$0.10/0.01/0.50, and US$2/0.10/10 respectively.
 - Preserved all existing model IDs and the GPT-5.6 Terra default; added mixed-usage, fully cached, and saved-selection regression checks for the new choices.
 - Updated both README languages and the shared pricing-reference date. Estimates retain the existing single-model monthly-aggregate scope, not invoice reconciliation.

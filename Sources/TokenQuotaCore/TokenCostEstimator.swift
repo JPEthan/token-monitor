@@ -10,9 +10,11 @@ public enum PricingModel: String, CaseIterable, Identifiable, Sendable {
     case sol61 = "gpt-6.1-sol"
     case sol6 = "gpt-6-sol"
     case luna6 = "gpt-6-luna"
-    case sol = "gpt-5.6-sol"
-    case terra = "gpt-5.6-terra"
-    case luna = "gpt-5.6-luna"
+
+    /// Keep supported saved selections; migrate retired or missing IDs to Sol 6.1.
+    public static func restoredSelection(_ savedID: String?) -> PricingModel {
+        PricingModel(rawValue: savedID ?? "") ?? .sol61
+    }
 
     public var id: String { rawValue }
 
@@ -22,9 +24,6 @@ public enum PricingModel: String, CaseIterable, Identifiable, Sendable {
         case .sol61: "GPT-6.1 Sol"
         case .sol6: "GPT-6 Sol"
         case .luna6: "GPT-6 Luna"
-        case .sol: "GPT-5.6 Sol"
-        case .terra: "GPT-5.6 Terra"
-        case .luna: "GPT-5.6 Luna"
         }
     }
 
@@ -41,9 +40,6 @@ public enum PricingModel: String, CaseIterable, Identifiable, Sendable {
         case .sol61: (2, Decimal(1) / 10, 10)
         case .sol6: (2, Decimal(2) / 10, 10)
         case .luna6: (Decimal(1) / 10, Decimal(1) / 100, Decimal(5) / 10)
-        case .sol: (4, Decimal(4) / 10, 20)
-        case .terra: (2, Decimal(2) / 10, 12)
-        case .luna: (Decimal(2) / 10, Decimal(2) / 100, Decimal(12) / 10)
         }
     }
 }
